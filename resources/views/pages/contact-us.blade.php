@@ -1,5 +1,13 @@
 @extends('layouts.app')
 
+@section('title')
+    {!! $page->title !!}
+@endsection
+
+@section('description')
+    {!! $page->description !!}
+@endsection
+
 @section('content')
 <section class="flat-map">
     <div class="container">
