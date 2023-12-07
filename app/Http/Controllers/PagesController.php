@@ -17,13 +17,13 @@ class PagesController extends Controller{
     {
         $title      = 'FAQs';
         $faqs = Faq::orderBy('ordering')->get();
-        
+
         return view('pages/faqs',compact('faqs', 'title'));
     }
 
     function page($slug = '') {
-        
-        $page = Page::where(['slug' => $slug])->firstOrFail();        
+
+        $page = Page::where(['slug' => $slug])->firstOrFail();
 
         if($slug == 'contact-us'){
             return view('pages.contact-us', compact('page'));
@@ -46,8 +46,8 @@ class PagesController extends Controller{
 
         if($data){
 
-            $email_to       = 'aqsinternational@badrayltd.co.uk';
-            $email_body     = $data['message'].'<br>'.'<b>Email From: </b>'.$data['email'].'<br>'.'<b>Username: </b>'.$data['name'].'<br>'.'<b>Subject: </b>'.$data['subject']; 
+            $email_to       = 'aleez@store.co.uk';
+            $email_body     = $data['message'].'<br>'.'<b>Email From: </b>'.$data['email'].'<br>'.'<b>Username: </b>'.$data['name'].'<br>'.'<b>Subject: </b>'.$data['subject'];
 
            Email::sendEmail(
                 array(

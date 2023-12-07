@@ -12,7 +12,7 @@
         tr.shown td span.details-control {
             background: url(../images/details_close.png) no-repeat center center;
         }
-        
+
         .dataTables_length{float: left;}
         .dt-buttons{float: right; margin: 14px 0 0 0px;}
         div.dataTables_processing{top:55%;}
@@ -141,7 +141,7 @@ margin-left: 15px;
 
         $(document).ready(function () {
 
-            
+
             $('#btnFiterSubmitSearch').click(function(){
                 $('#datatable').DataTable().draw(true);
             });
@@ -183,15 +183,15 @@ margin-left: 15px;
                                     </div>
                                     <div class="row invoice-to">
                                     <div class="col-md-4 col-sm-4 pull-left">
-                                        
+
                                         <p>
                                             <b>Company Name:</b> Badray ltd<br>
                                             <b>Phone:</b> 0141 3280103<br>
-                                            <b>Email:</b> aqsinternational@badrayltd.co.uk<br>
+                                            <b>Email:</b> aleez@store.co.uk<br>
                                             <b>Address:</b> 4 Gordon Avenue G52 4TG<br/> Hillington Glasgow</p>
                                     </div>
                                     <div class="col-md-8 col-sm-8 pull-right">
-                                        
+
                                         <p>
                                             <b>Name: </b>${customerName}<br>
                                             <b>Shop Name: </b>${companyName}<br>
@@ -214,7 +214,7 @@ margin-left: 15px;
                                             Sort Code: 82-54-04<br>
                                             Account No: 00042061<br>
                                             PLEASE NOTE OUR PAYMENT TERMS ARE 30 DAYS FROM DATE OF INVOICE</p>
-                                    </div>`);    
+                                    </div>`);
                     }
                 },{
                     extend: 'pdfHtml5',
@@ -224,12 +224,12 @@ margin-left: 15px;
                     extension: '.pdf',
                     header: true,
                     footer: true,
-                    //messageTop: pdfMessageTop, 
+                    //messageTop: pdfMessageTop,
                     messageBottom: '.                                                                                                                                                                                                                                  For BACS payment please credit                                                                                                                                               Clysdale Bank                                                                                                                                                                                 Account Name: Badray ltd.                                                                                                                                                                      Sort Code: 82-54-04                                                                                                                                                                             Account No: 00042061                                                                                                                                                                      PLEASE NOTE OUR PAYMENT TERMS ARE 30 DAYS FROM DATE OF INVOICE',
                     exportOptions: {
                         stripHtml: true,
                         columns: [0, 1, 2, 3 ]
-                    }, 
+                    },
                     customize: function ( doc ) {
                         doc.content.splice( 1, 0, {
                             text: '                                                                                                                                             '
@@ -242,7 +242,7 @@ margin-left: 15px;
                         });
                         doc.content.splice( 4, 0, {
                             //text: 'Admin Details:                                                                 ' +
-                               // 'Customer Details:' 
+                               // 'Customer Details:'
                         } );
                         doc.content.splice( 5, 0, {
                             text: pdfMessageTop
@@ -260,7 +260,7 @@ margin-left: 15px;
                             text: '                                                                                                                                             '
                         });
                         doc['header']=(function(page, pages) {
-                            
+
                             if (page == 1) {
                                 return {
                                     columns: [
@@ -306,7 +306,7 @@ margin-left: 15px;
                 order: [],
                 footerCallback: function (row, data, start, end, display) {
                     var api = this.api();
-                    
+
                     var arr= new Array();
                     $.each( data, function(key, value){
                             customerName = value.customer_name;
@@ -314,15 +314,15 @@ margin-left: 15px;
                             customerPhone = value.phone;
                             customerEmail = value.email;
                             customerAddress = value.address;
-                        
+
                             pdfMessageTop = 'Company Name: Badray ltd                                          Name: '+customerName+
                             '                                                                                              '+
                             'Phone: 0141 3280103                                                   Shop Name: '+companyName+
-                            '                                                                          Email: aqsinternational@badrayltd.co.uk'+
+                            '                                                                          Email: aleez@store.co.uk'+
                             '                   Phone: '+((customerPhone && customerPhone.length<5) ? (customerPhone + '                                                                     ') : customerPhone + ' ' )+
                             '                                                                     Address: 4 Gordon Avenue G52 4TG'+
                             '                          Email: '+customerEmail+'                                                       Hillington Glasgow'+
-                            '                                                         Address: '+customerAddress;        
+                            '                                                         Address: '+customerAddress;
                             return false;
                     });
 
@@ -339,14 +339,14 @@ margin-left: 15px;
 //                        .reduce(function (a, b) {
 //                            return intVal(a) + intVal(b);
 //                        }, 0);
-                    
-                    //  productAmount = api.column(1, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  productVat = api.column(2, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  totalProductVat = api.column(3, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  courierAmount = api.column(4, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  courierVat = api.column(5, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  totalCourier = api.column(6, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    
+
+                    //  productAmount = api.column(1, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  productVat = api.column(2, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  totalProductVat = api.column(3, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  courierAmount = api.column(4, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  courierVat = api.column(5, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  totalCourier = api.column(6, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+
                     // // Total over this page
                     // pageTotal = api
                     //     .column(9, { page: 'current' })
@@ -354,9 +354,9 @@ margin-left: 15px;
                     //     .reduce(function (a, b) {
                     //         return intVal(a) + intVal(b);
                     //     }, 0);
-                        
-                        
-                     
+
+
+
 
                     // // Update footer
                     // $(api.column(1).footer()).html('<b>Total Amount: £' + productAmount.toFixed(2)+'</b>');

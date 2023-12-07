@@ -89,7 +89,7 @@ class HomeController extends Controller
 
 
         $data = [
-            'email_from' => 'info@aqsinternational.com',
+            'email_from' => 'info@aleez.com',
             'email_to' => 'wasim.iqtm@gmail.com',
             'email_subject' => 'Newsletter Subscription',
             'user_name' => 'User',
@@ -106,7 +106,7 @@ class HomeController extends Controller
         try {
             $hermes = new MyHermes('03becf7c-638f-4bae-9496-8c7070d119d4',false);
             $address =explode(' ',$user['address']);
-    
+
             $mockData = [
                 'firstName' =>  $user['first_name'],
                 'lastName' => $user['last_name'],
@@ -119,12 +119,12 @@ class HomeController extends Controller
                 'addressLine3' => $user['state_country'],
                 'addressLine4' => $user['country'],
                 'value' => '120'
-    
+
             ];
-    
-    
+
+
             $response = $hermes->parcels([$mockData]);
-    
+
            // $response = $service->parcels([$mockData]);
             $barcode = '';
             $image = '';
@@ -132,7 +132,7 @@ class HomeController extends Controller
                 $barcode = $parcel->barcode;
                 $this->createBarcode($barcode);
             }
-            
+
             $image ='uploads/harmes_labels/'.$barcode.'.png';
             return ['barcode' => $barcode,'image' => $image];
         } catch(Exception $e) {
@@ -140,17 +140,17 @@ class HomeController extends Controller
           return ['barcode' => '','image' => ''];
         }
     }
-    
+
     public function testBarcode($barcode)
     {
         $this->createBarcode($barcode);
     }
-    
+
     private function createBarcode($barcode)
     {
         try {
             $curl = curl_init();
-    
+
             curl_setopt_array($curl, array(
                 CURLOPT_URL => 'https://api.myhermes.co.uk:443/api/labels/'.$barcode.'?format=THERMAL',
                 CURLOPT_RETURNTRANSFER => true,
@@ -166,25 +166,25 @@ class HomeController extends Controller
                     'Cookie: visid_incap_2011121=38PCrTSYSDapZLda1Tvure/Px18AAAAAQUIPAAAAAAAQ+EiFpjXjVzi/IJQReAFv; visid_incap_1996757=M18gU66+TG+cR6KjHkUJXsLsx18AAAAAQUIPAAAAAACV1B+03A4LVY81C0MBk6gB; nlbi_2011121=LrAyG/c320B4NaStYk7KeQAAAACRm6d27xQayqyFtq0/m1a4; incap_ses_960_2011121=BUPFU9VyJDt9R+B5GJtSDZLRz18AAAAAy6dadRVkO3eG/vL5p++ssg=='
                 ),
             ));
-    
+
             $response = curl_exec($curl);
-        
+
             curl_close($curl);
-            
-    
+
+
           file_put_contents( public_path('uploads/harmes_labels/'.$barcode.'.png'),$response);
-        
+
         } catch(Exception $e) {
           Log::error('MyHermes label error: ' .$e->getMessage());
         }
-        
+
     }
 
     public function getAuthCode()
     {
         try {
             $hermes = new MyHermes('03becf7c-638f-4bae-9496-8c7070d119d4',false);
-    
+
             $mockData = [
                 'firstName' => 'John',
                 'lastName' => 'Mitchell',
@@ -193,19 +193,19 @@ class HomeController extends Controller
                 'email' => 'john@email.com',
                 'postcode' => 'PH15HJ',
                 'addressLine1' => '10 Dowling Street'
-    
+
             ];
-    
-    
+
+
             $response = $hermes->parcels([$mockData]);
-    
-    
+
+
             // $response = $service->parcels([$mockData]);
             $barcode = '';
             $image = '';
             foreach ($response as $parcel) {
                 $curl = curl_init();
-    
+
                 curl_setopt_array($curl, array(
                     CURLOPT_URL => 'https://api.myhermes.co.uk:443/api/labels/'.$parcel->barcode.'?format=THERMAL',
                     CURLOPT_RETURNTRANSFER => true,
@@ -221,18 +221,18 @@ class HomeController extends Controller
                         'Cookie: visid_incap_2011121=38PCrTSYSDapZLda1Tvure/Px18AAAAAQUIPAAAAAAAQ+EiFpjXjVzi/IJQReAFv; visid_incap_1996757=M18gU66+TG+cR6KjHkUJXsLsx18AAAAAQUIPAAAAAACV1B+03A4LVY81C0MBk6gB; nlbi_2011121=LrAyG/c320B4NaStYk7KeQAAAACRm6d27xQayqyFtq0/m1a4; incap_ses_960_2011121=BUPFU9VyJDt9R+B5GJtSDZLRz18AAAAAy6dadRVkO3eG/vL5p++ssg=='
                     ),
                 ));
-    
+
                 $response = curl_exec($curl);
-    
-    
+
+
                 curl_close($curl);
                 $barcode = $parcel->barcode;
-    
+
                 file_put_contents( public_path('uploads/harmes_labels/'.$parcel->barcode.'.png'),$response);
-            
+
 
         }
-        
+
         } catch(Exception $e) {
           Log::error('MyHermes barcode error: ' .$e->getMessage());
         }

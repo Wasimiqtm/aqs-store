@@ -96,7 +96,7 @@ class RegisterController extends Controller
             $email = settingValue('email');
 
             $data = [
-                'email_from'    => 'info@aqsinternational.com',
+                'email_from'    => 'info@aleez.com',
                 'email_to'      => $email,
                 'email_subject' => $request->type.' Register Info',
                 'user_name'     => 'User',
@@ -136,7 +136,7 @@ class RegisterController extends Controller
         if(isset($data['type'])) {
             $userData = array_merge($userData, ['type' => $data['type'], 'vat_number' => $data['vat_number'], 'company_name' => $data['company_name'],'phone' => $data['contact_number'], 'is_active' => 'no','address' => $data['address']]);
         }
-    
+
         // create user
         return User::create($userData);
 
@@ -146,7 +146,7 @@ class RegisterController extends Controller
 
         $user = Newsletter_subscriber::whereEmail($email)->first();
         $data = [
-            'email_from' => 'info@aqsinternational.com',
+            'email_from' => 'info@aleez.com',
             'email_to' => $user->email,
             'email_subject' => 'Newsletter Subscription',
             'user_name' => 'User',

@@ -10,10 +10,10 @@
 
 @section('content')
     @php
-        
+
         $cart = @$order->cart;
         $user = unserialize(@$cart->user_details);
-        
+
         $userType = null;
         if (isset($user['email_address'])) {
             $dbUser = \App\Models\User::where('email', $user['email_address'])->first();
@@ -21,17 +21,17 @@
                 $userType = $dbUser->type;
             }
         }
-        
+
         //dd($user);
         $cart_details = unserialize(@$cart->cart_details);
         $courierAssignment = courierDetailData($cart->id);
         $trans_details = unserialize(@$order->trans_details);
-        
+
         $total_text = 'Due';
         if ($cart->payment_status == 'complete') {
             $total_text = 'Paid';
         }
-        
+
         $currency = getDefaultCurrency();
         $currency_code = @$currency->code;
         $subtotal = 0;
@@ -52,7 +52,7 @@
 
                             <div id="logo" class="logo">
 
-                                <img src="{{ asset('uploads/settings/site_logo.jpg') }}" alt="AQS International Store">
+                                <img src="{{ asset('uploads/settings/site_logo.jpg') }}" alt="Aleez Store">
 
                             </div>
                             <center>
@@ -145,29 +145,29 @@
                                         } else {
                                             $courierName = @$single_item['conditions']->getName();
                                         }
-                                        
+
                                         $courierAmout = $courier + $courierAmout;
                                         $unit_price = $single_item['price'];
-                                        
+
                                         $item_sub_total = $unit_price * $single_item['quantity'];
                                         $subtotal = $subtotal + $item_sub_total;
                                         $item_discount = @$single_item['item_discount'] ? $single_item['item_discount'] : 0;
                                         $item_sub_total = $item_sub_total - $item_discount;
                                         $courierVat = $courier * ($vatCharges / 100);
                                         $item_grand_total = $item_sub_total + $productVat + $courier + $courierVat;
-                                        
+
                                         // add courier assignment
                                         if ($totalShipmentCharges > 0) {
                                             $courierAmout = $totalShipmentCharges;
                                         }
-                                        
+
                                         // changes for retailer 02-05-23
                                         if ($userType == 'retailer') {
                                             $item_sub_total = $item_sub_total - $productVat;
                                             $item_grand_total = $item_grand_total - $productVat;
                                             $subtotal = $subtotal - $order['tax'];
                                         }
-                                        
+
                                         ?>
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
@@ -206,7 +206,7 @@
                                         $payment_method = @$trans_details['payer'];
                                         $payment_status = 'Pending';
                                         $payment_class = 'label-danger';
-                                        
+
                                         if ($cart->payment_status == 'complete') {
                                             $payment_status = 'Paid';
                                             $payment_class = 'label-success';

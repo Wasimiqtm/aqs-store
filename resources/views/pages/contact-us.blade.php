@@ -7,8 +7,8 @@
             <div class="col-md-12">
                 <div id="flat-map" class="pdmap">
                     <div class="flat-maps" data-address="" data-height="444" data-images="images/icons/map.png" data-name="Themesflat Map"></div>
-                    <div class="gm-map">                
-                        <div class="map"></div>                        
+                    <div class="gm-map">
+                        <div class="map"></div>
                     </div>
                 </div><!-- /#flat-map -->
             </div><!-- /.col-md-12 -->
@@ -68,12 +68,12 @@
                             <p>
                                 0141 3280103
                             </p>
-                            
+
                         </li>
                         <li class="email">
                             <h3>Email</h3>
                             <p>
-                               aqsinternational@badrayltd.co.uk
+                               aleez@store.co.uk
                             </p>
                         </li>
                         <li class="address">
@@ -135,5 +135,5 @@
 @section('scripts')
 
 
-    
+
 @endsection

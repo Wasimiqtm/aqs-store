@@ -37,16 +37,16 @@ class CartController extends Controller
         // add item to cart
         if(Auth::id()){
             $product = Product::with('shipping')->find($request->id);
-          
+
 
             // if product has variant
             if($product->product_id != 0 ){
                 $data = getDefaultVariant($product->product_id);
                 $product->shipping_id = $data->shipping_id;
-                
+
                 productDefaultCourier($request->id, $data->shipping_id);
             }
-          
+
             // set quantity
             $qty = ($request->quantity)??1;
 
@@ -77,8 +77,8 @@ class CartController extends Controller
                 $cartPrice = Cart::session(Auth::id())->getSubTotal();
                 $cartPrice = number_format($cartPrice,2);
                 $cart = Cart::session(Auth::id())->getContent()->values()->toArray();
-         
-             
+
+
                 $this-> updateCartInDB($cart);
             }
             else
@@ -101,17 +101,17 @@ class CartController extends Controller
 
     public function cartDetails()
     {
-        
+
 
         $count          = (Auth::id())?Cart::session(Auth::id())->getContent()->count():Cart::getContent()->count();
         $cartContents   = (Auth::id())?Cart::session(Auth::id())->getContent():Cart::getContent();
-        
+
         if (Auth::user()->type == 'dropshipper'){
             $subTotal=0;
         }else{
             $subTotal       = (Auth::id())?Cart::session(Auth::id())->getSubTotal():Cart::getSubTotal();
         }
-      
+
         $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
 
         if(!$cart){
@@ -125,32 +125,32 @@ class CartController extends Controller
         $woriginalPrice = 0;
         $wsubtotal = 0;
         $total_shipment_charges = 0;
-        
+
         foreach($cartContents as $item){
 
-            
+
 
             if (Auth::user()->type != 'retailer') {
                 $subTotal += $item->getPriceSum();
             }
-           
+
             $productDetails = getProductDetails($item->id);
             if($productDetails) {
                 $originalPrice += ($productDetails->price * $item->quantity);
             }
 
             if (Auth::user()->type == 'dropshipper') {
-                
+
                 if (@$courier_assign && $courier_assign->status == 2) {
                     $courierAssignmentDetail = CouriersAssignmentDetail::where('product_id', '=', $item->id)->where('cart_id', $cart->id)->first();
                     $item->courier_detail = $courierAssignmentDetail;
-                       
-                   
+
+
                     $item->courier_id = $courierAssignmentDetail->couriers->id??'';
                 } else if ($count == 1 && $item->quantity == 1) {
-                    
+
                     $total_shipment_charges = @$productDetails->courier->charges;
-                 
+
                     $item->courier_id = @$productDetails->courier->id;
                     $subTotal = $subTotal+$total_shipment_charges;
                 }
@@ -159,25 +159,25 @@ class CartController extends Controller
                 $this->applyDiscount($cartContents);
                 $originalPrice = $cartContents->orignalPrice;
                 $subTotal = $cartContents->subTotal;
-                
+
 
             }
 
         }
 
         if(Auth::user()->type == 'dropshipper' && @$courier_assign->status == 2 ) {
- 
+
             $cartContents = $cartContents->sortBy('courier_id');
             $this->attach_color($cartContents);
             $this->attach_shipment_charges($cartContents);
             $total_shipment_charges=$cartContents->shipment_charges;
             $subTotal = $subTotal+$total_shipment_charges;
-           
+
 
         }
 
         if(Auth::user()->type == 'wholesaler' && Auth::user()->type == 'dropshipper'  ) {
-               
+
             $cartContents = $courier_assign->sortBy('courier_id');
             $this->attach_color($cartContents);
             $this->attach_shipment_charges($cartContents);
@@ -190,7 +190,7 @@ class CartController extends Controller
         $couriers= Courier::all();
         $vatCharges=TaxRate::select('rate')->where('id',1)->first();
         $vatCharges=(int)$vatCharges->rate;
-        
+
         //$subTotal = number_format($subTotal,2);
                 // dd($subTotal);
 
@@ -220,7 +220,7 @@ class CartController extends Controller
         $woriginalPrice = 0;
         $wsubtotal = 0;
         $total_shipment_charges = 0;
-        
+
         foreach($cartContents as $item){
 
             $cartSum += $item->getPriceSum();
@@ -370,7 +370,7 @@ class CartController extends Controller
         $temp=0;
         $shipment_charges=0;
         $pre_key=0;
-        
+
         foreach($cartContents as $key=> $item)
         {
             if($courier_id == 0)
@@ -388,7 +388,7 @@ class CartController extends Controller
                 $courier_id=$item->courier_detail->group_no;
                 $shipment_charges = $shipment_charges + $item->courier_detail->couriers->charges;
             }
-            
+
             $pre_key=$key;
         }
 
@@ -487,21 +487,21 @@ class CartController extends Controller
 
         return view('cart.makePayment', compact('vatCharges','total_shipment_charges','userData', 'cartContents', 'subTotal', 'cartSum', 'originalPrice'));
     }*/
-    
-    
+
+
     public function makePayment()
     {
         $userData       = unserialize(ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first()->user_details);
         $cartContents   = (Auth::id())?Cart::session(Auth::id())->getContent():Cart::getContent();
-        
+
         $count          = (Auth::id())?Cart::session(Auth::id())->getContent()->count():Cart::getContent()->count();
-     
+
  if (Auth::user()->type == 'dropshipper'){
             $subTotal=0;
         }else{
             $subTotal       = (Auth::id())?Cart::session(Auth::id())->getSubTotal():Cart::getSubTotal();
         }
-      
+
         User::where('id',Auth::id())->update([
             'updated_at' => Carbon::now()
         ]);
@@ -528,7 +528,7 @@ class CartController extends Controller
 
             if(Auth::user()->type == 'dropshipper')
             {
-                
+
                 if(@$courier_assign && $courier_assign->status == 2 )
                 {
                     $courierAssignmentDetail= CouriersAssignmentDetail::where('product_id','=',$item->id)->where('cart_id',$cart->id)->first();
@@ -579,12 +579,12 @@ class CartController extends Controller
         $vatCharges=TaxRate::select('rate')->where('id',1)->first();
         $vatCharges=(int)$vatCharges->rate;
 
-        
+
         //$subTotal = number_format($subTotal,2);
 
         return view('cart.makePayment', compact('vatCharges','total_shipment_charges','userData', 'cartContents', 'subTotal', 'cartSum', 'originalPrice'));
     }
- 
+
 
     public function proceedAdminRequest()
     {
@@ -682,7 +682,7 @@ class CartController extends Controller
 
         $data = [
             'email_from'    => 'baadrayltd@gmail.com',
-            'email_to'      => 'aqsinternational@badrayltd.co.uk',           //'info@badrayltd.co.uk',
+            'email_to'      => 'aleez@store.co.uk',           //'info@badrayltd.co.uk',
             'email_subject' => 'New Request For Courier Assignmnet',
             'user_name'     => 'User',
             'final_content' => '<p><b>Dear Admin</b></p>
@@ -771,7 +771,7 @@ class CartController extends Controller
 //
 //            $message->to($emails)->subject
 //            (' cancel order');
-//            $message->from('support@aqsinternationalstore.co.uk','cancel Product');
+//            $message->from('support@aleez.co.uk','cancel Product');
 //        });
 
         Session::flash('success', 'Your order has been Canceled');
@@ -808,9 +808,9 @@ class CartController extends Controller
                         'value' => $request->quantity
                     ),
                 ));
-                
+
                 $cartTotal = Cart::session(Auth::id())->getTotalQuantity();
-            
+
                 $cartPrice = Cart::session(Auth::id())->getSubTotal();
                 $cartPrice = number_format($cartPrice,2);
 
@@ -1183,13 +1183,13 @@ class CartController extends Controller
             if ($order) {
                 $order->refund_request = 1;
                 $order->save();
-                
+
                 Session::flash('success', 'Your order refund request has been sent to admin');
                 return redirect('my-orders');
             }
-            
+
         }
-        
+
         Session::flash('error', 'Order not found!');
         return redirect('my-orders');
     }
