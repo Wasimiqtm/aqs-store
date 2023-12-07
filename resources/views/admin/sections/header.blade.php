@@ -12,7 +12,7 @@
 
     <a href="{{ url('admin/dashboard') }}" class="logo">
 
-        <span>AQS</span>
+        <span>ALEEZ</span>
 
     </a>
 
