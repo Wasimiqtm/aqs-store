@@ -1700,7 +1700,7 @@ if (! function_exists('getSliders')) {
 if (! function_exists('getProductDetails')) {
 
     function getProductDetails($id)
-    {dd($id);
+    {
         return Product::with('tax_rate')->with('courier')->whereId($id)->first();
     }
 }
@@ -1826,7 +1826,7 @@ if (! function_exists('getDefaultCurrency')) {
 }
 
 if (! function_exists('addShippingCharges')) {
-    function addShippingCharges($product,$type)
+    function addShippingCharges($product,$type = null)
     {
         if( $type == 'dropshipper'){
             $product = Product::with('courier')->where('id', $product->id)->first();

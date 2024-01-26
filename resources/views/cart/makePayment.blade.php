@@ -20,7 +20,7 @@
                                                 <label for="first_name">First Name *</label>
                                                 <input type="text" id="first-name" name="first_name" class="form-control"
                                                     placeholder="First Name"
-                                                    value="{{ Auth::user()->type != 'dropshipper' ? Auth::user()->first_name : '' }}"
+                                                    value="{{ Auth::user() && Auth::user()->type != 'dropshipper' ? Auth::user()->first_name : '' }}"
                                                     required>
                                             </p>
                                         </div>
@@ -30,7 +30,7 @@
                                                 <label for="last_name">Last Name *</label>
                                                 <input type="text" id="last-name" name="last_name" class="form-control"
                                                     placeholder="Last Name"
-                                                    value="{{ Auth::user()->type != 'dropshipper' ? Auth::user()->last_name : '' }}"
+                                                    value="{{ Auth::user() && Auth::user()->type != 'dropshipper' ? Auth::user()->last_name : '' }}"
                                                     required>
                                             </p>
                                         </div>
@@ -41,21 +41,21 @@
                                         <label for="company_name">Company Name</label>
                                         <input type="text" id="company-name" name="company_name" class="form-control"
                                             value="{{ $userData['company_name'] ?? '' }}"
-                                            {{ Auth::user()->type == 'wholesaler' ? 'required' : '' }}>
+                                            {{ Auth::user() && Auth::user()->type == 'wholesaler' ? 'required' : '' }}>
                                     </div>
                                     <div class="field-row">
                                         <div class="form-group">
                                             <p class="field-one-half">
                                                 <label for="email_address">Email Address *</label>
                                                 <input type="email" id="email-address" name="email_address"
-                                                    class="form-control" value="{{ Auth::user()->email }}" readonly>
+                                                    class="form-control" value="{{ Auth::user() ? Auth::user()->email : '' }}" {{Auth::check()?'readonly':''}}>
                                             </p>
                                         </div>
                                         <div class="form-group">
                                             <p class="field-one-half">
                                                 <label for="phone">Phone *</label>
                                                 <input type="text" id="phone" name="phone" class="form-control"
-                                                    value="{{ Auth::user()->phone }}"required>
+                                                    value="{{ Auth::user() ? Auth::user()->phone : '' }}"required>
                                             </p>
                                         </div>
 
@@ -65,7 +65,7 @@
                                     <div class="field-row form-group">
                                         <label for="address">Address *</label>
                                         <input type="text" id="address" name="address" placeholder="Street address"
-                                            class="form-control" value="{{ $userData['address'] ?? '' }}" required>
+                                            class="form-control" value="{{ !empty($userData['address']) ?? '' }}" required>
                                         <input type="text" id="address-2" name="address_2"
                                             placeholder="Apartment, suite, unit etc. (optional)" class="form-control">
                                     </div>
@@ -124,7 +124,7 @@
                                         <td style="background-color: {{ @$product->color }}">{{ @$product->name }}</td>
                                         {{--									<td>£{{$product->price.' * '.$product->quantity.' = '. $product->price * $product->quantity}}</td> --}}
 
-                                        @if (Auth::user()->type == 'wholesaler')
+                                        @if (Auth::user() && Auth::user()->type == 'wholesaler')
                                             <td>£{{ $product->price . ' * ' . $product->quantity . ' = ' . $product->price * $product->quantity }}
                                             </td>
                                         @else
@@ -152,7 +152,7 @@
                         <table>
                             <tbody>
 
-                                @if (Auth::user()->type == 'retailer')
+                                @if ((Auth::user() && Auth::user()->type == 'retailer') || !Auth::check())
                                     <tr style="display:none">
                                         <td>Product Vat</td>
                                         <td class="subtotal">£{{ number_format(($subTotal * $vatCharges) / 100, 2) }}</td>
@@ -174,7 +174,7 @@
                                     </tr>
                                 @endif
 
-                                @if (Auth::user()->type == 'dropshipper')
+                                @if (Auth::user() && Auth::user()->type == 'dropshipper')
                                     <tr>
                                         <td>Subtotal Vat</td>
                                         @php $vatAmount = number_format(($originalPrice*$vatCharges)/100,2);@endphp
@@ -185,10 +185,10 @@
                                 @endif
 
                                 <tr>
-                                    @if (Auth::user()->type == 'dropshipper')
+                                    @if (Auth::user() && Auth::user()->type == 'dropshipper')
                                         <td>Shipping</td>
                                         <td>£{{ number_format(@$total_shipment_charges, 2) }}</td>
-                                    @elseif(Auth::user()->type == 'retailer')
+                                    @elseif((Auth::user() && Auth::user()->type == 'retailer') || !Auth::check())
                                         <td>Shipping</td>
                                         <td>Free</td>
                                     @else
@@ -197,7 +197,7 @@
                                     @endif
                                 </tr>
 
-                                @if (Auth::user()->type == 'dropshipper')
+                                @if (Auth::user() && Auth::user()->type == 'dropshipper')
                                     <tr>
                                         <td>Shipping Vat</td>
                                         <td class="subtotal">
@@ -206,7 +206,7 @@
                                     </tr>
                                 @endif
 
-                                @if (Auth::user()->type == 'retailer')
+                                @if ((Auth::user() && Auth::user()->type == 'retailer') || !Auth::check())
                                     <?php
 									$disc = $originalPrice - $subTotal;
 									if ($disc > 0) {
@@ -220,7 +220,7 @@
                                     <?php } ?>
                                 @endif
 
-                                @if (Auth::user()->type == 'wholesaler')
+                                @if (Auth::check() && Auth::user()->type == 'wholesaler')
                                     <tr>
 
                                         <td>Discount</td>
@@ -245,7 +245,7 @@
                             </tbody>
                         </table>
 
-                        @if (Auth::user()->type == 'wholesaler' || Auth::user()->type == 'dropshipper')
+                        @if (Auth::check() && (Auth::user()->type == 'wholesaler' || Auth::user()->type == 'dropshipper'))
                             <?php $totalAmountWallet = getWholsellerDataWallet(Auth::user()->id);
                             $subtotals = $subTotal;
                             ?>
@@ -392,13 +392,13 @@
 
             // paypal starts
             if ("{{ Auth::id() }}") {
-                PayPalPayment();
+                //PayPalPayment();
                 /*setTimeout(function(){
                 	PayPalPayment();
                 }, 3000);*/
             }
             // paypal starts
-
+            PayPalPayment();
             // get cart
             getCartDetails();
         });
@@ -478,7 +478,11 @@
                             success: function(response) {
                                 console.log(response);
                                 if (response.status) {
-                                    window.location.href = "{{ url('my-orders') }}";
+                                    if ("{{ Auth::id() }}") {
+                                        window.location.href = "{{ url('my-orders') }}";
+                                    } else {
+                                        window.location.href = "{{ url('/') }}";
+                                    }
                                 }
                             },
                             error: function(request, status, error) {
@@ -506,7 +510,11 @@
                     },
                     success: function(response) {
                         if (response.status) {
-                            window.location.href = "{{ url('my-orders') }}";
+                            if ("{{ Auth::id() }}") {
+                                window.location.href = "{{ url('my-orders') }}";
+                            } else {
+                                window.location.href = "{{ url('/') }}";
+                            }
                         }
                     },
                     error: function(request, status, error) {

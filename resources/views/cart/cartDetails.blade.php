@@ -3,7 +3,7 @@
 	<div class="col-lg-8">
 		<div class="flat-row-title styl e1">
 			<h3>Shopping Cart</h3>
-            @if(Auth::user()->type == 'wholesaler')
+            @if(Auth::user() && Auth::user()->type == 'wholesaler')
             <div class="Row">
                 @if(Auth::user()->percentage_1 > 0 && Auth::user()->quantity_1 >0  )
                 <p class="bold">{{Auth::user()->percentage_1.'% off if Quantity of Each Item equal or gretaer than '.Auth::user()->quantity_1}}</p>
@@ -57,7 +57,7 @@
                                         </select>
                                     </div>
                                 </div>
-                            @elseif(Auth::user()->type == 'dropshipper' && ($count ==1 && $product->quantity == 1) )
+                            @elseif(Auth::user() && Auth::user()->type == 'dropshipper' && ($count ==1 && $product->quantity == 1) )
 
 {{--                                {{dd($cart->courierAssignment,$product->courier_detail->couriers_id)}}--}}
                                 <div class="col-md-12">
@@ -119,32 +119,32 @@
 
                         <td class="subtotal">£{{number_format($originalPrice,2)}}</td>
                     </tr>
-                    @if(Auth::user()->type == 'dropshipper')
+                    @if(Auth::user() && Auth::user()->type == 'dropshipper')
                     <tr>
                         <td>Product Vat</td>
                         <td class="subtotal">£{{number_format(($originalPrice*$vatCharges)/100,2)}}</td>
-                        @php 
-                        $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2) 
+                        @php
+                        $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2)
                         @endphp
                     </tr>
                     @endif
 
-                    @if(Auth::user()->type == 'retailer')
+                    @if((Auth::user() && Auth::user()->type == 'retailer') || !Auth::user())
                     <tr style="display:none">
                         <td>Product Vat</td>
                         <td class="subtotal">£{{number_format(($subTotal*$vatCharges)/100,2)}}</td>
                     </tr>
-                        @php 
+                        @php
                             $pVat = (($subTotal)*$vatCharges)/100;
                             $subTotal=number_format($subTotal,2);
                         @endphp
                     @endif
 
                     <tr>
-                        @if(Auth::user()->type == 'dropshipper')
+                        @if(Auth::user() && Auth::user()->type == 'dropshipper')
                             <td>Shipping Charges</td>
                             <td >£{{number_format(@$total_shipment_charges,2) }}</td>
-                        @elseif(Auth::user()->type == 'wholesaler')
+                        @elseif(Auth::user() && Auth::user()->type == 'wholesaler')
                             <td>Shipping Charges</td>
                             <td class="subtotal">£0</td>
                         @else
@@ -154,17 +154,17 @@
                         @endif
                     </tr>
 
-                    @if(Auth::user()->type == 'dropshipper')
+                    @if(Auth::user() && Auth::user()->type == 'dropshipper')
                         <tr>
                             <td>Shipping Tax</td>
                             <td class="subtotal">£{{number_format(($total_shipment_charges*$vatCharges)/100,2)}}</td>
-                            @php 
+                            @php
                                 $total_shipment_charges=number_format($total_shipment_charges+(($total_shipment_charges)*$vatCharges)/100,2);
                             @endphp
                         </tr>
                     @endif
 
-                    @if(Auth::user()->type == 'retailer')
+                    @if((Auth::user() && Auth::user()->type == 'retailer') || !Auth::user())
                     <?php
                         $disc = $originalPrice - $subTotal;
                         if ($disc > 0) {
@@ -176,7 +176,7 @@
                     <?php } ?>
                     @endif
 
-                    @if(Auth::user()->type == 'wholesaler')
+                    @if(Auth::user() && Auth::user()->type == 'wholesaler')
                     <tr>
                         <td>Discount</td>
                         <td class="subtotal">£{{number_format($originalPrice - $subTotal,2)}}</td>
@@ -195,8 +195,8 @@
                 </table>
                 <div class="btn-cart-totals">
 
-                    <?php 
-                        $type = Auth::user()->type;    
+                    <?php
+                        $type = Auth::user() ? Auth::user()->type : 'retailer';
                     ?>
 
                     @if($count > 0)

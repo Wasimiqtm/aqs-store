@@ -33,41 +33,37 @@ class CartController extends Controller
     /*add to cart*/
     public function add(Request $request)
     {
-
+        /*generic logic starts*/
         // add item to cart
+        $product = Product::with('shipping')->find($request->id);
+        // if product has variant
+        if($product->product_id != 0 ){
+            $data = getDefaultVariant($product->product_id);
+            $product->shipping_id = $data->shipping_id;
+            productDefaultCourier($request->id, $data->shipping_id);
+        }
+        // set quantity
+        $qty = ($request->quantity)??1;
+
+        // add shipping charges condition
+        $shipping = new \Darryldecode\Cart\CartCondition(array(
+            'name' => addShippingCharges($product,Auth::user()->type??null)['name'],
+            'type' => 'shipping',
+            'target' => 'total',
+            'value' => addShippingCharges($product,Auth::user()->type??null)['charges'],
+            'attributes' =>  ['courier_id' => $product->shipping_id]
+        ));
+        $productData = array(
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->discountedPrice,
+            'quantity' => $qty,
+            'attributes' => array(),
+            'conditions' => $shipping
+        );
+        /*generic logic ends*/
+
         if(Auth::id()){
-            $product = Product::with('shipping')->find($request->id);
-
-
-            // if product has variant
-            if($product->product_id != 0 ){
-                $data = getDefaultVariant($product->product_id);
-                $product->shipping_id = $data->shipping_id;
-
-                productDefaultCourier($request->id, $data->shipping_id);
-            }
-
-            // set quantity
-            $qty = ($request->quantity)??1;
-
-            // add shipping charges condition
-
-            $shipping = new \Darryldecode\Cart\CartCondition(array(
-                'name' => addShippingCharges($product,Auth::user()->type)['name'],
-                'type' => 'shipping',
-                'target' => 'total',
-                'value' => addShippingCharges($product,Auth::user()->type)['charges'],
-                'attributes' =>  ['courier_id' => $product->shipping_id]
-            ));
-            $productData = array(
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => $product->discountedPrice,
-                'quantity' => $qty,
-                'attributes' => array(),
-                'conditions' => $shipping
-            );
-
             $cart = ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
 
             if(Auth::user()->type != 'dropshipper' || !@$cart->courierAssignment || @$cart->courierAssignment->status == 3|| @$cart->courierAssignment->status == 4  )
@@ -77,48 +73,46 @@ class CartController extends Controller
                 $cartPrice = Cart::session(Auth::id())->getSubTotal();
                 $cartPrice = number_format($cartPrice,2);
                 $cart = Cart::session(Auth::id())->getContent()->values()->toArray();
-
-
                 $this-> updateCartInDB($cart);
             }
             else
             {
                 return ['status' => false,'message' => 'Sorry Your Previous Request Already In Process'];
             }
-
-
-
-
-        }else{
-            /*Cart::add($productData);
+        } else { /*guest user logic*/
+            Cart::add($productData);
             $cartTotal = Cart::getTotalQuantity();
-            $cartPrice = Cart::getSubTotal();*/
-            return ['status' => false,'message' => 'Please login first to add item in your cart.'];
+            $cartPrice = Cart::getSubTotal();
+            $cartPrice = number_format($cartPrice,2);
+            /*$cart = Cart::getContent()->values()->toArray();
+            $this-> updateCartInDB($cart);*/
+            //return ['status' => false,'message' => 'Please login first to add item in your cart.'];
         }
-
         return ['status' => true,'cartTotal' => $cartTotal, 'cartPrice' => $cartPrice ,'message' => ''.$product->name.' added successfully.'];
     }
 
     public function cartDetails()
     {
-
-
         $count          = (Auth::id())?Cart::session(Auth::id())->getContent()->count():Cart::getContent()->count();
         $cartContents   = (Auth::id())?Cart::session(Auth::id())->getContent():Cart::getContent();
 
-        if (Auth::user()->type == 'dropshipper'){
+        if (Auth::user() && Auth::user()->type == 'dropshipper'){
             $subTotal=0;
         }else{
             $subTotal       = (Auth::id())?Cart::session(Auth::id())->getSubTotal():Cart::getSubTotal();
         }
 
-        $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
+        if(Auth::user())
+        {
+            $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
+            $courier_assign = CouriersAssignment::where('cart_id',$cart->id)->first();
 
-        if(!$cart){
-            return back()->with('error','No data found');
+            if(!$cart){
+                return back()->with('error','No data found');
+            }
+        } else {
+            $cart = '';
         }
-
-        $courier_assign = CouriersAssignment::where('cart_id',$cart->id)->first();
 
         $cartSum = 0;
         $originalPrice = 0;
@@ -128,9 +122,7 @@ class CartController extends Controller
 
         foreach($cartContents as $item){
 
-
-
-            if (Auth::user()->type != 'retailer') {
+            if (Auth::user() &&  Auth::user()->type != 'retailer') {
                 $subTotal += $item->getPriceSum();
             }
 
@@ -139,7 +131,7 @@ class CartController extends Controller
                 $originalPrice += ($productDetails->price * $item->quantity);
             }
 
-            if (Auth::user()->type == 'dropshipper') {
+            if (Auth::user() &&  Auth::user()->type == 'dropshipper') {
 
                 if (@$courier_assign && $courier_assign->status == 2) {
                     $courierAssignmentDetail = CouriersAssignmentDetail::where('product_id', '=', $item->id)->where('cart_id', $cart->id)->first();
@@ -154,7 +146,7 @@ class CartController extends Controller
                     $item->courier_id = @$productDetails->courier->id;
                     $subTotal = $subTotal+$total_shipment_charges;
                 }
-            } elseif (Auth::user()->type == 'wholesaler') {
+            } elseif (Auth::user() &&  Auth::user()->type == 'wholesaler') {
 
                 $this->applyDiscount($cartContents);
                 $originalPrice = $cartContents->orignalPrice;
@@ -165,7 +157,7 @@ class CartController extends Controller
 
         }
 
-        if(Auth::user()->type == 'dropshipper' && @$courier_assign->status == 2 ) {
+        if(Auth::user() &&  Auth::user()->type == 'dropshipper' && @$courier_assign->status == 2 ) {
 
             $cartContents = $cartContents->sortBy('courier_id');
             $this->attach_color($cartContents);
@@ -176,7 +168,7 @@ class CartController extends Controller
 
         }
 
-        if(Auth::user()->type == 'wholesaler' && Auth::user()->type == 'dropshipper'  ) {
+        if(Auth::user() &&  Auth::user()->type == 'wholesaler' && Auth::user()->type == 'dropshipper'  ) {
 
             $cartContents = $courier_assign->sortBy('courier_id');
             $this->attach_color($cartContents);
@@ -491,42 +483,61 @@ class CartController extends Controller
 
     public function makePayment()
     {
-        $userData       = unserialize(ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first()->user_details);
+        $userData = '';
+        if(Auth::check())
+        {
+            $userData       = unserialize(ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first()->user_details);
+        }
         $cartContents   = (Auth::id())?Cart::session(Auth::id())->getContent():Cart::getContent();
 
-        $count          = (Auth::id())?Cart::session(Auth::id())->getContent()->count():Cart::getContent()->count();
+        $count = (Auth::id())?Cart::session(Auth::id())->getContent()->count():Cart::getContent()->count();
 
- if (Auth::user()->type == 'dropshipper'){
+        /*redirect back user if no items added to cart*/
+        if($count < 1) {
+            Session::flash('error', 'Sorry! Please add some items to your cart to access this page.');
+            return redirect('/');
+        }
+
+        if (Auth::user() && Auth::user()->type == 'dropshipper'){
             $subTotal=0;
         }else{
             $subTotal       = (Auth::id())?Cart::session(Auth::id())->getSubTotal():Cart::getSubTotal();
         }
 
-        User::where('id',Auth::id())->update([
-            'updated_at' => Carbon::now()
-        ]);
+
+
+        if(Auth::check())
+        {
+            User::where('id',Auth::id())->update([
+                'updated_at' => Carbon::now()
+            ]);
+        }
 
         if(settingValue('wholesaler_quantity')!=""){
-            if((Cart::session(Auth::id())->getTotalQuantity() < settingValue('wholesaler_quantity')) && (Auth::user()->type == 'wholesaler')) {
+            if(((Auth::id())?Cart::session(Auth::id())->getTotalQuantity():Cart::getTotalQuantity() < settingValue('wholesaler_quantity')) && (Auth::user() && Auth::user()->type == 'wholesaler')) {
                 Session::flash('error', 'Sorry! You must add atleast '.settingValue('wholesaler_quantity').' items in cart.');
                 return redirect()->back();
             }
         }
-        $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
-        $courier_assign = CouriersAssignment::where('cart_id',$cart->id)->first();
+        if(Auth::check())
+        {
+            $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
+            $courier_assign = CouriersAssignment::where('cart_id',$cart->id)->first();
+        }
+
         $cartSum = 0;
         $originalPrice = 0;
         $total_shipment_charges = 0;
         foreach($cartContents as $item){
 
-            if (Auth::user()->type != 'retailer') {
+            if (Auth::user() && Auth::user()->type != 'retailer') {
                 $subTotal += $item->getPriceSum();
             }
             $productDetails = getProductDetails($item->id);
             $originalPrice  += ($productDetails->price * $item->quantity);
 
 
-            if(Auth::user()->type == 'dropshipper')
+            if(Auth::user() && Auth::user()->type == 'dropshipper')
             {
 
                 if(@$courier_assign && $courier_assign->status == 2 )
@@ -546,7 +557,7 @@ class CartController extends Controller
 
                 }
             }
-            elseif(Auth::user()->type == 'wholesaler')
+            elseif(Auth::user() && Auth::user()->type == 'wholesaler')
             {
 
 
@@ -559,7 +570,7 @@ class CartController extends Controller
         }
 
 
-        if(Auth::user()->type == 'dropshipper' && @$courier_assign->status == 2 ) {
+        if((Auth::user() && Auth::user()->type == 'dropshipper') && @$courier_assign->status == 2 ) {
 
             $cartContents = $cartContents->sortBy('courier_id');
             $this->attach_color($cartContents);
@@ -569,7 +580,7 @@ class CartController extends Controller
 
         }
 
-        if(Auth::user()->type == 'dropshipper' && (($count == 1 && $item->quantity  > 1 ) && @$courier_assign->status !=2  ) ) {
+        if((Auth::user() && Auth::user()->type == 'dropshipper') && (($count == 1 && $item->quantity  > 1 ) && @$courier_assign->status !=2  ) ) {
 
             Session::flash('error', 'Kindly Send Request To Admin');
             return redirect()->back();
@@ -798,7 +809,7 @@ class CartController extends Controller
 
         $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
 
-        if(Auth::user()->type != 'dropshipper' || !@$cart->courierAssignment || @$cart->courierAssignment->status == 3|| @$cart->courierAssignment->status == 4  )
+        if(Auth::user() && Auth::user()->type != 'dropshipper' || !@$cart->courierAssignment || @$cart->courierAssignment->status == 3|| @$cart->courierAssignment->status == 4  )
         {
         if($request->id && $request->quantity) {
             if (Auth::id()) {
@@ -845,7 +856,7 @@ class CartController extends Controller
     {
         $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
 
-        if(Auth::user()->type != 'dropshipper' || !@$cart->courierAssignment || @$cart->courierAssignment->status == 3|| @$cart->courierAssignment->status == 4  ) {
+        if(Auth::user() && Auth::user()->type != 'dropshipper' || !@$cart->courierAssignment || @$cart->courierAssignment->status == 3|| @$cart->courierAssignment->status == 4  ) {
 
             if (Auth::id()) {
                 Cart::session(Auth::id())->remove($request->id);
@@ -880,7 +891,12 @@ class CartController extends Controller
 
     public function CompletePayment(Request $request)
     {
-        $data = ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
+        if(Auth::check())
+        {
+            $data = ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
+        } else {
+            $data = ShoppingCart::where(['email' => $request->payer, 'payment_status' => 'pending'])->first();
+        }
 
         if($data){
             $cartContents   = (Auth::id())?Cart::session(Auth::id())->getContent():Cart::getContent();
@@ -900,7 +916,12 @@ class CartController extends Controller
             }
             $this->updateUserStatus();
 //            make transaction entry
-            $transaction['user_id']   = Auth::id();
+            if(Auth::check())
+            {
+                $transaction['user_id']   = Auth::id();
+            } else {
+                $transaction['email']   = $request->payer;
+            }
             $transaction['cart_id']   = $data->id;
             $transaction['qty']       = $totalQty;
             $transaction['cost']      = $cost;
@@ -940,8 +961,14 @@ class CartController extends Controller
 
 //            update shopping cart and clear
 
-                $this->sendPaymentSuccessEmail(Auth::user()->email,'user');
-                $this->sendPaymentSuccessEmail('','admin');
+            if(Auth::check())
+            {
+                $notificationEmail = Auth::user()->email;
+            } else {
+                $notificationEmail = $request->payer;
+            }
+            $this->sendPaymentSuccessEmail($notificationEmail,'user');
+            $this->sendPaymentSuccessEmail('','admin');
             ShoppingCart::whereId($data->id)->update(array('payment_status' => 'complete'));
             (Auth::id())?Cart::session(Auth::id())->clear():Cart::clear();
             Session::flash('success', 'Your order has been placed successfully');
@@ -951,28 +978,54 @@ class CartController extends Controller
         }
     }
 
-    private function updateCartInDB($cart){
-        $result = ShoppingCart::updateOrCreate(['user_id' => Auth::id(), 'payment_status' => 'pending'],
-            ['user_id' => Auth::id(), 'cart_details' => serialize($cart)]);
+    private function updateCartInDB($cart, $email = null){
+        if(Auth::check())
+        {
+            ShoppingCart::updateOrCreate(['user_id' => Auth::id(), 'payment_status' => 'pending'],
+                ['user_id' => Auth::id(), 'cart_details' => serialize($cart)]);
+        } else {
+            ShoppingCart::updateOrCreate(['email' => $email, 'payment_status' => 'pending'],
+                ['email' => $email, 'cart_details' => serialize($cart)]);
+        }
+
     }
 
-    public function saveUserInfo(Request $request){
+    public function saveUserInfo(Request $request)
+    {
         $formData = array();
         parse_str($request->all()['formData'], $formData);
-
-        $userUpdate = [
-            'first_name' => $formData['first_name'],
-            'last_name' => $formData['last_name'],
-            'phone' => $formData['phone']
-        ];
-        $user = User::findOrFail(Auth::id());
-
-        if (Auth::user()->type != 'dropshipper') {
-            $user->update($userUpdate);
+        if(Auth::check())
+        {
+            $userUpdate = [
+                'first_name' => $formData['first_name'],
+                'last_name' => $formData['last_name'],
+                'phone' => $formData['phone']
+            ];
+            $user = User::findOrFail(Auth::id());
+            if (Auth::user()->type != 'dropshipper') {
+                $user->update($userUpdate);
+            }
+            $userUpdate['type'] = $user->type;
+            ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->update(['user_details' => serialize($formData)]);
+        } else {
+            /*create shopping cart for guest user*/
+            $cart = Cart::getContent()->values()->toArray();
+            $this-> updateCartInDB($cart, $formData['email_address']);
+            $userUpdate = [
+                'first_name' => $formData['first_name'],
+                'last_name' => $formData['last_name'],
+                'company_name' => $formData['company_name'],
+                'email' => $formData['email_address'],
+                'address' => $formData['address'].' '.$formData['address_2'],
+                'town_city' => $formData['town_city'],
+                'state_country' => $formData['state_country'],
+                'post_code' => $formData['post_code'],
+                'country' => $formData['country'],
+                'phone' => $formData['phone']
+            ];
+            $userUpdate['type'] = 'guest';
+            ShoppingCart::where(['email' => $formData['email_address'], 'payment_status' => 'pending'])->update(['user_details' => serialize($formData)]);
         }
-        $userUpdate['type'] = $user->type;
-
-        $userData = ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->update(['user_details' => serialize($formData)]);
         return ['status' => true ,'message' => 'User info saved successfully'];
     }
 
@@ -1113,9 +1166,12 @@ class CartController extends Controller
 
     public function updateUserStatus()
     {
-        return User::where('id', Auth::user()->id)->update([
-            'is_latest' => 1
-        ]);
+        if(Auth::check())
+        {
+            return User::where('id', Auth::user()->id)->update([
+                'is_latest' => 1
+            ]);
+        }
     }
 
     public function updateShipment()
@@ -1151,7 +1207,7 @@ class CartController extends Controller
             'email_to'      => $email,
             'email_subject' => 'New Order',
             'user_name'     => 'User',
-            'final_content' => '<p><b>Dear Admin</b></p>
+            'final_content' => '<p><b>Dear User</b></p>
                                     <p>You order has been placed successfully</p>',
         ];
         if($type ==='admin'){

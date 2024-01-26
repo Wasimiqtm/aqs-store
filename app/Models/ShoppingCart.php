@@ -13,6 +13,7 @@ class ShoppingCart extends Model
     protected $fillable = [
         'id',
         'user_id',
+        'email',
         'cart_details'
     ];
 

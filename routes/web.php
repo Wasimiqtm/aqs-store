@@ -26,14 +26,15 @@ Route::get('test-barcode/{barcode}', 'HomeController@testBarcode');
 
 Auth::routes();
 Route::get('{user_type}/register', 'Auth\RegisterController@userTypeRegister');
+/*For guest users*/
+Route::get('/make-payment', 'CartController@makePayment');
+Route::get('/checkout-payment', 'CartController@cart');
+Route::post('/save-user-info', 'CartController@saveUserInfo');
+Route::post('/paypal-transaction-complete', 'CartController@CompletePayment');
 
 Route::group(['middleware' => ['auth']], function () {
 
     /*cart routes*/
-    Route::get('/make-payment', 'CartController@makePayment');
-    Route::get('/checkout-payment', 'CartController@cart');
-    Route::post('/save-user-info', 'CartController@saveUserInfo');
-    Route::post('/paypal-transaction-complete', 'CartController@CompletePayment');
     Route::get('/proceed-admin-request', 'CartController@proceedAdminRequest');
     Route::get('/cancel-request/{id}/customer', 'CartController@cancelRequestCustomer');
 
