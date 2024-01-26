@@ -10,10 +10,10 @@
 
 @section('content')
     <?php
-    
+
     $cart = @$order->cart;
     $user = unserialize(@$cart->user_details);
-    
+
     $userType = null;
     if (isset($user['email_address'])) {
         $dbUser = \App\Models\User::where('email', $user['email_address'])->first();
@@ -21,19 +21,19 @@
             $userType = $dbUser->type;
         }
     }
-    
+
     //dd($user);
     //$cart_details = unserialize(@$cart->cart_details);
     $cart_details = $cartContents;
     $courierAssignment = courierDetailData($cart->id);
-    
+
     $trans_details = unserialize(@$order->trans_details);
-    
+
     $total_text = 'Due';
     if ($cart->payment_status == 'complete') {
         $total_text = 'Paid';
     }
-    
+
     $currency = getDefaultCurrency();
     $currency_code = @$currency->code;
     $subtotal = 0;
@@ -71,11 +71,11 @@
                                     <h4>Invoice ID: <b>{{ $order->paypal_id }}</b></h4>
                                     <h4>Admin Details:</h4>
                                     <p>
-                                        <b>Company Name:</b> Badray ltd<br>
-                                        <b>Phone:</b> 0141 3280103<br>
-                                        <b>Email:</b> aqsinternational@badrayltd.co.uk<br>
-                                        <b>Address:</b> 4 Gordon Avenue G52 4TG Hillington Glasgow
-                                    </p>
+                                        <b>Company Name:</b> JEEZ LIMITED<br>
+                                        <b>Trading Name:</b> ALEEZ<br>
+                                        <b>MOBILE (WHATSAPP) NO:</b> 073 65 65 65 38<br>
+                                        <b>Email:</b> JEEZ.LTD@GMAIL.COM<br>
+                                        <b>Address:</b> UNIT 6, 140 WOODHEAD ROAD MUSEUM BUSINESS<br/> PARK GLASGOW G53 7NN</p>
                                     <h4>Customer Details:</h4>
                                     <p>
                                         <b>Name:</b> {{ @$user['first_name'] }} {{ @$user['last_name'] }}<br>
@@ -138,7 +138,7 @@
                                         $productVat = getOrderProductTaxAmount($order->purchasedItems, $single_item['id']);
                                         $courier = $courierVat = 0;
                                         //if ($single_item['charges_check'] == 2) {
-                                        
+
                                         $courier = isset($single_item['conditions']) ? $single_item['conditions']->getValue() : 0;
                                         $courierName = '';
                                         if (@$courierAssignment->status == 2) {
@@ -152,22 +152,22 @@
                                         }
                                         $courierVat = $courier * ($vatCharges / 100);
                                         //}
-                                        
+
                                         $courierAmout = $courier + $courierAmout;
                                         $unit_price = $single_item['price'];
-                                        
+
                                         $item_sub_total = $unit_price * $single_item['quantity'];
                                         $subtotal = $subtotal + $item_sub_total;
                                         $item_discount = @$single_item['item_discount'] ? $single_item['item_discount'] : 0;
                                         $item_sub_total = $item_sub_total - $item_discount;
-                                        
+
                                         $item_grand_total = $item_sub_total + $productVat + $courier + $courierVat;
-                                        
+
                                         // add courier assignment
                                         if ($totalShipmentCharges > 0) {
                                             $courierAmout = $totalShipmentCharges;
                                         }
-                                        
+
                                         // changes for retailer 02-05-23
                                         if ($userType == 'retailer') {
                                             $item_sub_total = $item_sub_total - $productVat;
@@ -212,7 +212,7 @@
                                         $payment_method = @$trans_details['payer'];
                                         $payment_status = 'Pending';
                                         $payment_class = 'label-danger';
-                                        
+
                                         if ($cart->payment_status == 'complete') {
                                             $payment_status = 'Paid';
                                             $payment_class = 'label-success';

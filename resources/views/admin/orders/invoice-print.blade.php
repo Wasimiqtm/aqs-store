@@ -65,14 +65,11 @@
                                     <h4>Invoice ID: <b>{{ $order->paypal_id }}</b></h4>
                                     <h4>Admin Details:</h4>
                                     <p>
-                                        <b>Company Name:</b> Badray ltd<br>
-                                        <b>Phone:</b> 0141 3280103<br>
-                                        <b>Email:</b> aqsinternational@badrayltd.co.uk<br>
-                                        <b>Address:</b> UNIT B3/2/B WING 2
-                                        TRUMP HOUSE
-                                        15 EDISON STREET
-                                        G52 4JW
-                                    </p>
+                                        <b>Company Name:</b> JEEZ LIMITED<br>
+                                        <b>Trading Name:</b> ALEEZ<br>
+                                        <b>MOBILE (WHATSAPP) NO:</b> 073 65 65 65 38<br>
+                                        <b>Email:</b> JEEZ.LTD@GMAIL.COM<br>
+                                        <b>Address:</b> UNIT 6, 140 WOODHEAD ROAD MUSEUM BUSINESS<br/> PARK GLASGOW G53 7NN</p>
                                     <h4>Customer Details:</h4>
                                     <p>
                                         <b>Name:</b> {{ @$user['first_name'] }} {{ @$user['last_name'] }}<br>

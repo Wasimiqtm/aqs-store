@@ -188,10 +188,11 @@ margin-left: 15px;
                                                     <div class="" style="width: 50%; float:left;">\
                                                         <h4></h4>\
                                                         <p>\
-                                                            <b>Company Name:</b> Badray ltd<br>\
-                                                            <b>Phone:</b> 0141 3280103<br>\
-                                                            <b>Email:</b> aqsinternational@badrayltd.co.uk<br>\
-                                                            <b>Address:</b> 4 Gordon Avenue G52 4TG<br/> Hillington Glasgow</p>\
+                                                            <b>Company Name:</b> JEEZ LIMITED<br>\
+                                                                        <b>Trading Name:</b> ALEEZ<br>\
+                                                                        <b>MOBILE (WHATSAPP) NO:</b> 073 65 65 65 38<br>\
+                                                                        <b>Email:</b> JEEZ.LTD@GMAIL.COM<br>\
+                                                                        <b>Address:</b> UNIT 6, 140 WOODHEAD ROAD MUSEUM BUSINESS<br/> PARK GLASGOW G53 7NN</p>\
                                                     </div>\
                                                     <div class="" style="width: 50%; float:right;">\
                                                         <h4></h4>\
@@ -217,7 +218,7 @@ margin-left: 15px;
                     extension: '.pdf',
                     footer: true,
                     header: true,
-                    //messageTop: pdfMessageTop, 
+                    //messageTop: pdfMessageTop,
                     exportOptions: {
                         columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                     },
@@ -332,23 +333,23 @@ margin-left: 15px;
                                 customerAddress = value.address;
 
                                 pdfMessageTop =
-                                    'Company Name: Badray ltd                                          Name: ' +
+                                    'Company Name: JEEZ LIMITED                                          Name: ' +
                                     customerName +
                                     '                                                                                              ' +
-                                    'Phone: 0141 3280103                                                   Shop Name: ' +
+                                    'Phone: 00 44 141 374 0633                                                   Shop Name: ' +
                                     companyName +
-                                    '                                                                          Email: aqsinternational@badrayltd.co.uk' +
+                                    '                                                                          Email: JEEZ.LTD@GMAIL.COM' +
                                     '                  Phone: ' + customerPhone +
                                     '                                                                     Address: 4 Gordon Avenue G52 4TG' +
                                     '                          Email: ' +
                                     customerEmail +
-                                    '                                             Hillington Glasgow' +
+                                    '                                             UNIT 6, 140 WOODHEAD ROAD MUSEUM BUSINESS PARK GLASGOW G53 7NN' +
                                     '                                                         Address: ' +
                                     customerAddress;
                                 return false;
                             }
                         });
-                        
+
                         if (obj.is_refunded != 1) {
                             productAmount = productAmount + intVal(obj.sum_amount);
                             productVat = productVat + intVal(obj.product_vat);

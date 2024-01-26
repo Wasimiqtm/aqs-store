@@ -185,10 +185,11 @@ margin-left: 15px;
                                                                 <div class="col-md-4 col-sm-4 pull-left">\
                                                                     <h4>Admin Details:</h4>\
                                                                     <p>\
-                                                                        <b>Company Name:</b> Badray ltd<br>\
-                                                                        <b>Phone:</b> 0141 3280103<br>\
-                                                                        <b>Email:</b> aqsinternational@badrayltd.co.uk<br>\
-                                                                        <b>Address:</b> 4 Gordon Avenue G52 4TG<br/> Hillington Glasgow</p>\
+                                                                        <b>Company Name:</b> JEEZ LIMITED<br>\
+                                                                        <b>Trading Name:</b> ALEEZ<br>\
+                                                                        <b>MOBILE (WHATSAPP) NO:</b> 073 65 65 65 38<br>\
+                                                                        <b>Email:</b> JEEZ.LTD@GMAIL.COM<br>\
+                                                                        <b>Address:</b> UNIT 6, 140 WOODHEAD ROAD MUSEUM BUSINESS<br/> PARK GLASGOW G53 7NN</p>\
                                                                 </div>\
                                                                 <div class="col-md-8 col-sm-8 pull-right">\
                                                                     <h4>Customer Details:</h4>\
@@ -214,7 +215,7 @@ margin-left: 15px;
                     extension: '.pdf',
                     header: true,
                     footer: true,
-                    //messageTop: pdfMessageTop, 
+                    //messageTop: pdfMessageTop,
                     messageBottom: '.                                                                                                                                                                                                                                  For BACS payment please credit                                                                                                                                               Clysdale Bank                                                                                                                                                                                 Account Name: Badray ltd.                                                                                                                                                                      Sort Code: 82-54-04                                                                                                                                                                             Account No: 00042061                                                                                                                                                                      PLEASE NOTE OUR PAYMENT TERMS ARE 30 DAYS FROM DATE OF INVOICE',
                     exportOptions: {
                         columns: [0, 1, 2, 3, 4, 5, 6, 7]
@@ -324,19 +325,19 @@ margin-left: 15px;
                         customerAddress = value.address;
 
                         pdfMessageTop =
-                            'Company Name: Badray ltd                                          Name: ' +
+                            'Company Name: JEEZ LIMITED                                          Name: ' +
                             customerName +
                             '                                                                                              ' +
-                            'Phone: 0141 3280103                                                   Shop Name: ' +
+                            'Phone: 00 44 141 374 0633                                                   Shop Name: ' +
                             companyName +
-                            '                                                                          Email: aqsinternational@badrayltd.co.uk' +
+                            '                                                                          Email: JEEZ.LTD@GMAIL.COM ' +
                             '                   Phone: ' + ((customerPhone.length < 5) ? (
                                 customerPhone +
                                 '                                                                     '
                             ) : customerPhone + ' ') +
-                            '                                                                     Address: 4 Gordon Avenue G52 4TG' +
+                            '                                                                     Address: UNIT 6, 140 WOODHEAD ROAD MUSEUM ' +
                             '                          Email: ' + customerEmail +
-                            '                                                       Hillington Glasgow' +
+                            '                                                       BUSINESS PARK GLASGOW G53 7NN' +
                             '                                                         Address: ' +
                             customerAddress;
                         return false;
@@ -358,12 +359,12 @@ margin-left: 15px;
                     //                            return intVal(a) + intVal(b);
                     //                        }, 0);
 
-                    //  productAmount = api.column(1, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  productVat = api.column(2, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  totalProductVat = api.column(3, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  courierAmount = api.column(4, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  courierVat = api.column(5, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
-                    //  totalCourier = api.column(6, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);  
+                    //  productAmount = api.column(1, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  productVat = api.column(2, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  totalProductVat = api.column(3, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  courierAmount = api.column(4, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  courierVat = api.column(5, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
+                    //  totalCourier = api.column(6, { page: 'current' }).data().reduce(function (a, b) { return intVal(a) + intVal(b); }, 0);
 
                     // // Total over this page
                     // pageTotal = api
