@@ -895,7 +895,7 @@ class CartController extends Controller
         {
             $data = ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
         } else {
-            $data = ShoppingCart::where(['email' => $request->payer, 'payment_status' => 'pending'])->first();
+            $data = ShoppingCart::where(['email' => $request->guest_user_email, 'payment_status' => 'pending'])->first();
         }
 
         if($data){
@@ -920,7 +920,7 @@ class CartController extends Controller
             {
                 $transaction['user_id']   = Auth::id();
             } else {
-                $transaction['email']   = $request->payer;
+                $transaction['email']   = $request->guest_user_email;
             }
             $transaction['cart_id']   = $data->id;
             $transaction['qty']       = $totalQty;
@@ -965,7 +965,7 @@ class CartController extends Controller
             {
                 $notificationEmail = Auth::user()->email;
             } else {
-                $notificationEmail = $request->payer;
+                $notificationEmail = $request->guest_user_email;
             }
             $this->sendPaymentSuccessEmail($notificationEmail,'user');
             $this->sendPaymentSuccessEmail('','admin');
@@ -1026,7 +1026,8 @@ class CartController extends Controller
             $userUpdate['type'] = 'guest';
             ShoppingCart::where(['email' => $formData['email_address'], 'payment_status' => 'pending'])->update(['user_details' => serialize($formData)]);
         }
-        return ['status' => true ,'message' => 'User info saved successfully'];
+        $userEmail = $formData['email_address'];
+        return ['status' => true, 'email' => $userEmail ,'message' => 'User info saved successfully'];
     }
 
     /*my ordres view*/

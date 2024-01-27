@@ -49,6 +49,7 @@
                                                 <label for="email_address">Email Address *</label>
                                                 <input type="email" id="email-address" name="email_address"
                                                     class="form-control" value="{{ Auth::user() ? Auth::user()->email : '' }}" {{Auth::check()?'readonly':''}}>
+                                                <input type="hidden" id="guestUserEmail" value="" />
                                             </p>
                                         </div>
                                         <div class="form-group">
@@ -384,6 +385,8 @@
                                     $("#paypal-button-container").removeClass("disableSection");
                                     $(".paywithwallet").removeClass("disableSection");
                                     $("#myForm").addClass("disableSection");
+                                    // get guest user email
+                                    $("#guestUserEmail").val(response.email)
                                     toastr.success(response.message);
                                     hide_loader();
                                 }
@@ -452,6 +455,7 @@
                         var amount = details.purchase_units[0].amount.value;
                         var currency = details.purchase_units[0].amount.currency_code;
                         var shipping_address = details.purchase_units[0].shipping.address.admin_area_1;
+                        var guestUserEmail = $("#guestUserEmail").val()
 
                         var allData = {
                             trans_id: trans_id,
@@ -463,7 +467,8 @@
                             currency: currency,
                             shipping_address: shipping_address,
                             discount: discountAmount,
-                            vat_amount: vatAmount
+                            vat_amount: vatAmount,
+                            guest_user_email: guestUserEmail
                         };
 
 
