@@ -22,7 +22,7 @@
                 <!--breadcrumbs start -->
                 <ul class="breadcrumb">
                     <li><a href="{{ url('admin/dashboard') }}"><i class="fa fa-home"></i> Dashboard</a></li>
-                    <li class="active">Orders</li>
+                    <li class="active">{{ Request::segment(2) }}</li>
                 </ul>
                 <!--breadcrumbs end -->
             </div>
@@ -49,14 +49,14 @@
                                     <th> Email </th>
                                     <th> Amount </th>
                                     {{-- <th> Label Image </th> --}}
-                             
+
                                     @if(auth()->user()->can('change order status'))
                                     <th> Status </th>
                                     @endif
                                     @if(auth()->user()->can('change order status'))
                                         <th> Courier </th>
                                     @endif
-                                    
+
                                     @if(auth()->user()->can('view order invoice'))
                                     <th> Action </th>
                                     @endif
@@ -73,7 +73,7 @@
                                     <th> Email </th>
                                     <th> Amount </th>
                                     {{-- <th> Label Image </th> --}}
-                          
+
                                     @if(auth()->user()->can('change order status'))
                                     <th> Status </th>
                                     @endif
@@ -209,7 +209,7 @@
     @else
         var end = moment();
     @endif
-    
+
     var upload_url = '{{ asset("uploads") }}';
     var  $reload_datatable={};
      var url = window.location.href;
@@ -225,7 +225,7 @@
         var updated_url = current_url.replace("to_date="+to_date_param, "to_date="+end.format('YYYY-MM-DD'));
         window.history.pushState("", "", updated_url);
     }
-    
+
        cb(start, end);
     $("document").ready(function () {
 
@@ -234,7 +234,7 @@
             var default_url = window.location.href+'?user_id=0&from_date='+start.format('YYYY-MM-DD')+'&to_date='+end.format('YYYY-MM-DD')+'&start=0&length=10';
             window.history.pushState("", "", default_url);
         }
-        
+
         @if(request()->user_id)
         var current_url     = window.location.href;
         var user_id_param  = getParams('user_id');
@@ -243,7 +243,7 @@
         @endif
 
     loadDatatable(start.format('YYYY-MM-DD'),end.format('YYYY-MM-DD'))
-       
+
         var reload_datatable = $("#datatable").dataTable( { bRetrieve : true } );
 
         $(document).on('click', '.addViewOrderNote', function ()
@@ -255,7 +255,7 @@
             $('#note_add_form_textarea').val(note);
             $('#note_add_model').modal('show');
         });
-        
+
         $(document).on('submit', '#note_add_form', function (e)
         {
             e.preventDefault();
@@ -296,7 +296,7 @@
                 tr.addClass('shown');
             }
         } );
-        
+
 
         $(document).on('click', '.refresh_products', function (e) {
             reload_datatable.fnDraw();
@@ -357,7 +357,7 @@
                 }
             });//..... end of ajax() .....//
         })
-        
+
              $("body").on('change','.status_update' ,function () {
             var status= $(this).val();
             var cart_id = $(this).attr("data-id");
@@ -423,10 +423,10 @@
         });
 
         return div;
-        
+
         // var products = rowData.purchased_items;
 
-        
+
 
         // if(products.length>0){
         //     console.log(products);
@@ -521,7 +521,7 @@
            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
     },cb);
-    
+
      $('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
     $('#reportrange').val('');
     $reload_datatable.fnDraw();
@@ -530,11 +530,11 @@
   $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
    startdate = picker.startDate.format('YYYY-MM-DD');
    enddate = picker.endDate.format('YYYY-MM-DD');
- 
-   
+
+
     $('#datatable').DataTable().destroy();
    loadDatatable(startdate,enddate)
- 
+
     });
     function loadDatatable(start_date='',end_date=''){
 
@@ -560,7 +560,7 @@
                 {data: 'email', width: "10%"},
                 {data: 'amount', width: "5%"},
                 // {data: 'barcode_image', width: "10%"},
-             
+
                 @if(auth()->user()->can('change order status'))
                 {data: 'status', width: "10%", orderable: false, searchable: false},
                 @endif

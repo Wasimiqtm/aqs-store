@@ -41,7 +41,7 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::get('get-product-stocks/{product_id}','ProductsController@getProductStocks');
     Route::post('upload-csv-products','ProductsController@uploadCsvProducts');
     Route::get('products/make-copy/{product_id}','ProductsController@makeCopy');
-    
+
     Route::resource('manage-stocks', 'StockController');
     Route::get('get-store-products', 'StockController@getStoreProducts');
 
@@ -70,7 +70,7 @@ Route::group(['namespace' => 'Admin'], function () {
 
     Route::resource('admins', 'AdminController');
     Route::get('profile', 'ProfileController@index');
-    
+
     Route::get('get-users', 'ProfileController@getInvoiceList');
     Route::get('get-user-statment', 'ProfileController@getUserStatment');
     Route::get('account-statement2', 'AccountStatementController@index');
@@ -110,6 +110,8 @@ Route::group(['namespace' => 'Admin'], function () {
 
     // Orders
     Route::resource('orders', 'OrdersController');
+    Route::get('guest-user-orders','OrdersController@guestUserOrders');
+
     Route::put('orders/change-status/{id}/{cart_id}','OrdersController@changStatus');
     Route::put('orders/change-courier/{id}/{cart_id}','OrdersController@changeCourier');
     Route::get('order-print/{id}','OrdersController@orderPrint');
@@ -134,11 +136,11 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::get('update-status/{name}/{id?}', 'AdminController@updateStatusPayment');
     Route::get('update-status-order/{id}', 'AdminController@updateStatusOrder');
     Route::get('update-delivery-status/{id}', 'AdminController@updateDeliveryStatus');
-    
+
     Route::get('send-email', 'HomeController@sendEmailView');
     Route::post('send-email', 'HomeController@sendEmail');
 
     Route::get('send-stock-email', 'HomeController@sendStockEmail');
-    
+
 });
 

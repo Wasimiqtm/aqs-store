@@ -339,8 +339,11 @@
 
 @section('scripts')
     {{-- live --}}
-    <script
+    {{--<script
         src="https://www.paypal.com/sdk/js?client-id=AbFSkkSixS51Qe_69o4v1RVOvTeTAcFYW-d8SspuBFQWswkBsof5UsvNF6RGAFMLIoZn7Z4PEnYYhJei&currency=GBP">
+    </script>--}}
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=AeghHOMLYv-MLrLCLI9L69pWS0H9UnliEN3HOsfhNyArfWOXi0y8ji8y-ry0lV0H9vJW0JYySjw06z3j&currency=GBP">
     </script>
     {{-- sandbox --}}
     {{-- <script src="https://www.paypal.com/sdk/js?client-id=AbFSkkSixS51Qe_69o4v1RVOvTeTAcFYW-d8SspuBFQWswkBsof5UsvNF6RGAFMLIoZn7Z4PEnYYhJei&currency=GBP"></script> --}}

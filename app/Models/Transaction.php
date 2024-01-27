@@ -8,6 +8,7 @@ class Transaction extends Model
 {
     protected $fillable = [
         'user_id',
+        'email',
         'paypal_id',
         'cart_id',
         'qty',
@@ -36,9 +37,9 @@ class Transaction extends Model
     public function product(){
         return $this->belongsTo(Product::class,'product_id');
     }
-    
+
     public function scopeDateFilter($query){
-       
+
         return $query->whereDate('created_at','>=',request()->from_date)->whereDate('created_at','<=',request()->to_date);
     }
 }

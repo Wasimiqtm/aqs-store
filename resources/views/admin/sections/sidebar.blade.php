@@ -34,7 +34,7 @@
                     </a>
                 </li>
                 @endcan
-                
+
                         @can('view drop_shipper')
                     <li>
                         <a  href="{{ route('admin.shipper.orders')  }}" {{ setActive(['admin/shipper-orders']) }}>
@@ -143,6 +143,12 @@
                         <span>Orders</span>
                     </a>
                 </li>
+                    <li>
+                        <a  href="{{ url('admin/guest-user-orders') }}" {{ setActive(['admin/guest-user-orders']) }}>
+                            <i class="fa fa-file-text"></i>
+                            <span>Guest User Orders</span>
+                        </a>
+                    </li>
                 <!-- <li>
                     <a  href="{{ url('admin/sales') }}" {{ setActive(['admin/sales','admin/invoice']) }}>
                         <i class="fa fa-file-text"></i>
