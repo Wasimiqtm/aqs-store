@@ -19,6 +19,8 @@
         $dbUser = \App\Models\User::where('email', $user['email_address'])->first();
         if ($dbUser) {
             $userType = $dbUser->type;
+        } else {
+            $userType = 'guest';
         }
     }
 
@@ -236,7 +238,7 @@
                                         <li style="display:none;">Discount :
                                             {{ $currency_code }}{{ number_format((float) $order['discount'], 2) }} </li>
                                         <li>VAT : {{ $currency_code }}{{ number_format($order['tax'], 2) }} </li>
-                                        @if ($userType != 'retailer')
+                                        @if ($userType != 'retailer' && $userType != 'guest')
                                             <li>Courier Charges :
                                                 {{ $currency_code }}{{ number_format($courierAmout, 2) }}
                                             </li>
