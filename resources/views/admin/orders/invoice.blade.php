@@ -171,7 +171,7 @@
                                         }
 
                                         // changes for retailer 02-05-23
-                                        if ($userType == 'retailer') {
+                                        if ($userType == 'retailer' || $userType == 'guest') {
                                             $item_sub_total = $item_sub_total - $productVat;
                                             $item_grand_total = $item_grand_total - $productVat;
                                             $subtotal = $subtotal - $order['tax'];
