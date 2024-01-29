@@ -1828,10 +1828,23 @@ if (! function_exists('getDefaultCurrency')) {
 if (! function_exists('addShippingCharges')) {
     function addShippingCharges($product,$type = null)
     {
-        if( $type == 'dropshipper'){
-            $product = Product::with('courier')->where('id', $product->id)->first();
+        if( $type == 'dropshipper' || $type == 'wholesaler'){
+            /*previous logic for drop shipper courier charges*/
+            /*$product = Product::with('courier')->where('id', $product->id)->first();
+            return ['name' => ($product->courier)?$product->courier->name:'Free Shipping', 'charges' => ($product->courier)?$product->courier->charges:0];*/
 
-            return ['name' => ($product->courier)?$product->courier->name:'Free Shipping', 'charges' => ($product->courier)?$product->courier->charges:0];
+            /*new logic for dropshipper for adding flat courier charges*/
+            $shipping = Shipping::whereName('TCS')->first();
+            if($shipping)
+            {
+                $shippingName = $shipping->name;
+                $shippingCharges = $shipping->charges;
+            } else {
+                $shippingName = 'Free Shipping';
+                $shippingCharges = 0;
+            }
+//            return $shippingCharges * $qty;
+            return ['name' => $shippingName, 'charges' => $shippingCharges];
         }
 
 
