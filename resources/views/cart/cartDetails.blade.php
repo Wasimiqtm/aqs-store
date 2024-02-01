@@ -119,12 +119,13 @@
 
                         <td class="subtotal">£{{number_format($originalPrice,2)}}</td>
                     </tr>
-                    @if(Auth::user() && Auth::user()->type == 'dropshipper')
+                    @if(Auth::user() && (Auth::user()->type == 'dropshipper'))
                     <tr>
                         <td>Product Vat</td>
                         <td class="subtotal">£{{number_format(($originalPrice*$vatCharges)/100,2)}}</td>
                         @php
-                        $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2)
+                        $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2);
+                        $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
                         @endphp
                     </tr>
                     @endif
@@ -141,7 +142,7 @@
                     @endif
 
                     <tr>
-                        @if(Auth::user() && Auth::user()->type == 'dropshipper')
+                        {{--@if(Auth::user() && Auth::user()->type == 'dropshipper')
                             <td>Shipping Charges</td>
                             <td >£{{number_format(@$total_shipment_charges,2) }}</td>
                         @elseif(Auth::user() && Auth::user()->type == 'wholesaler')
@@ -150,11 +151,21 @@
                         @else
                             <td>Shipping Charges</td>
                             <td >Free</td>
-                            {{-- <td class="subtotal">£{{number_format(($subTotal - $cartSum) ,2)}}</td> --}}
+                            --}}{{-- <td class="subtotal">£{{number_format(($subTotal - $cartSum) ,2)}}</td> --}}{{--
+                        @endif--}}
+                        @if(Auth::user() && ((Auth::user()->type == 'dropshipper') || (Auth::user()->type == 'wholesaler')))
+                            <td>Shipping Charges</td>
+                            <td >Free</td>
+                        @endif
+                    </tr>
+                    <tr>
+                        @if(Auth::user() && ((Auth::user()->type == 'dropshipper') || (Auth::user()->type == 'wholesaler')))
+                            <td><label><input style="opacity: 1" type="checkbox" name="fast_shipping" onchange="handleCheckboxChange(this)">Fast Shipping</label></td>
+                            <td id="fastShippingCharges">£{{$fastShippingCharges}}</td>
                         @endif
                     </tr>
 
-                    @if(Auth::user() && Auth::user()->type == 'dropshipper')
+                    {{--@if(Auth::user() && Auth::user()->type == 'dropshipper')
                         <tr>
                             <td>Shipping Tax</td>
                             <td class="subtotal">£{{number_format(($total_shipment_charges*$vatCharges)/100,2)}}</td>
@@ -162,7 +173,7 @@
                                 $total_shipment_charges=number_format($total_shipment_charges+(($total_shipment_charges)*$vatCharges)/100,2);
                             @endphp
                         </tr>
-                    @endif
+                    @endif--}}
 
                     @if((Auth::user() && Auth::user()->type == 'retailer') || !Auth::user())
                     <?php
@@ -184,12 +195,15 @@
                     <tr>
                         <td>Vat</td>
                         <td>£{{number_format(($subTotal*$vatCharges)/100,2)}}</td>
-                        @php $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2) @endphp
+                        @php $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2);
+                            $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
+                        @endphp
                     </tr>
                     @endif
                     <tr>
                         <td>Total</td>
-                        <td class="price-total">£{{$subTotal}}</td>
+                        <td class="price-total price-total-with-shipping">£{{$subTotal}}</td>
+                        {{--<td class="price-total fast-shipping-subtotal" style="display: none">£{{$fastShippingSubtotal}}</td>--}}
                     </tr>
                     </tbody>
                 </table>
@@ -199,7 +213,7 @@
                         $type = Auth::user() ? Auth::user()->type : 'retailer';
                     ?>
 
-                    @if($count > 0)
+                    {{--@if($count > 0)
                         @if($type == 'dropshipper' && is_null($cart->courierAssignment) && $count == 1 && $product->quantity == 1)
                             <a href="{{url('products')}}" class="update" title="">Continue Shopping</a>
                             <a href="{{url('make-payment')}}" class="checkout mb-4 ptc1" title="">Proceed to Checkout</a>
@@ -223,7 +237,9 @@
                             <a href="{{url('products')}}" class="update" title="">Continue Shopping</a>
                             <a href="{{url('make-payment')}}" class="checkout mb-4 ptc3" title="">Proceed to Checkout</a>
                         @endif
-                    @endif
+                    @endif--}}
+                        <a href="{{url('products')}}" class="update" title="">Continue Shopping</a>
+                        <a id="checkoutLink" href="{{url('make-payment?fastShipping=false')}}" class="checkout mb-4 ptc3" title="">Proceed to Checkout</a>
                 </div><!-- /.btn-cart-totals -->
             </form><!-- /form -->
         </div><!-- /.cart-totals -->
@@ -314,6 +330,17 @@
         });
 
     });
+
+    function handleCheckboxChange(checkbox) {
+        // Get the value of the variable when the checkbox is checked
+        var updatedCharges = checkbox.checked ? "{{@$fastShippingSubtotal}}" : "{{$subTotal}}";
+
+        var newHref = checkbox.checked ? "{{url('make-payment?fastShipping=true')}}" : "{{url('make-payment?fastShipping=false')}}"
+
+        $("#checkoutLink").attr("href", newHref);
+
+        $('.price-total-with-shipping').text(updatedCharges)
+    }
 
     function checkToUpdateCart(event){
         var currentValue = $(event).val();

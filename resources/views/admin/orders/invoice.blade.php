@@ -239,13 +239,20 @@
                                             {{ $currency_code }}{{ number_format((float) $order['discount'], 2) }} </li>
                                         <li>VAT : {{ $currency_code }}{{ number_format($order['tax'], 2) }} </li>
                                         @if ($userType != 'retailer' && $userType != 'guest')
-                                            <li>Courier Charges :
+                                            {{--<li>Courier Charges :
                                                 {{ $currency_code }}{{ number_format($courierAmout, 2) }}
                                             </li>
                                             <li>Courier Vat :
                                                 {{ $currency_code }}{{ number_format($courierAmout * ($vatCharges / 100), 2) }}
+                                            </li>--}}
+                                            <li>@if($order_with_transaction['fast_shipping_charges'] > 0)
+                                                    Fast Shipping Charges : {{ $currency_code }}{{$order_with_transaction['fast_shipping_charges']}}
+                                                @else
+                                                    Free Shipping : {{ $currency_code }}0
+                                                @endif
                                             </li>
                                         @endif
+
                                         <li class="grand-total">Total :
                                             {{ $currency_code }}{{ number_format($order['amount'], 2) }}</li>
                                     </ul>

@@ -181,17 +181,18 @@
                                         @php $vatAmount = number_format(($originalPrice*$vatCharges)/100,2);@endphp
                                         <td class="subtotal">£{{ number_format(($originalPrice * $vatCharges) / 100, 2) }}
                                         </td>
-                                        @php $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2) @endphp
+                                        @php $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2);
+                                         $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
+                                        @endphp
                                     </tr>
                                 @endif
 
                                 <tr>
-                                    @if (Auth::user() && Auth::user()->type == 'dropshipper')
-                                        <td>Shipping</td>
-                                        <td>£{{ number_format(@$total_shipment_charges, 2) }}</td>
-                                    @elseif((Auth::user() && Auth::user()->type == 'retailer') || !Auth::check())
-                                        <td>Shipping</td>
-                                        <td>Free</td>
+                                    @if (Auth::user() && (Auth::user()->type == 'dropshipper' || Auth::user()->type == 'wholesaler'))
+                                        {{--<td>Shipping</td>
+                                        <td>£{{ number_format(@$total_shipment_charges, 2) }}</td>--}}
+                                        <td>{{$fastShippingCheck ? 'Fast Shipping' : 'Free Shipping'}}</td>
+                                            <td>£{{ $fastShippingCheck ? $fastShippingCharges : 0 }}</td>
                                     @else
                                         <td>Shipping </td>
                                         <td class="subtotal">£{{ number_format($subTotal - $cartSum, 2) }}</td>
@@ -199,12 +200,12 @@
                                 </tr>
 
                                 @if (Auth::user() && Auth::user()->type == 'dropshipper')
-                                    <tr>
+                                    {{--<tr>
                                         <td>Shipping Vat</td>
                                         <td class="subtotal">
                                             £{{ number_format(($total_shipment_charges * $vatCharges) / 100, 2) }}</td>
                                         @php $total_shipment_charges=number_format($total_shipment_charges+(($total_shipment_charges)*$vatCharges)/100,2) @endphp
-                                    </tr>
+                                    </tr>--}}
                                 @endif
 
                                 @if ((Auth::user() && Auth::user()->type == 'retailer') || !Auth::check())
@@ -224,9 +225,9 @@
                                 @if (Auth::check() && Auth::user()->type == 'wholesaler')
                                     <tr>
 
-                                        <td>Discount</td>
+                                        {{--<td>Discount</td>
                                         @php $discountAmount = number_format(($originalPrice - $cartSum),2);@endphp
-                                        <td>£{{ $discountAmount }}</td>
+                                        <td>£{{ $discountAmount }}</td>--}}
                                     </tr>
                                     <tr>
 
@@ -235,20 +236,21 @@
                                         @php $vatAmount = number_format(($subTotal*$vatCharges)/100,2);@endphp
                                         <td>£{{ number_format(($subTotal * $vatCharges) / 100, 2) }}</td>
 
-                                        @php $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2) @endphp
-
+                                        @php $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2);
+                                         $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
+                                        @endphp
                                     </tr>
                                 @endif
                                 <tr>
                                     <td>Total</td>
-                                    <td class="price-total">£{{ $subTotal }}</td>
+                                    <td class="price-total">£{{ $fastShippingCheck ? $fastShippingSubtotal : $subTotal }}</td>
                                 </tr>
                             </tbody>
                         </table>
 
                         @if (Auth::check() && (Auth::user()->type == 'wholesaler' || Auth::user()->type == 'dropshipper'))
                             <?php $totalAmountWallet = getWholsellerDataWallet(Auth::user()->id);
-                            $subtotals = $subTotal;
+                            $subtotals = $fastShippingCheck ? $fastShippingSubtotal : $subTotal;
                             ?>
 
                             <div class="form-box">
@@ -424,7 +426,7 @@
 
         function PayPalPayment() {
             // var amount = "{{ Auth::id() ? Cart::session(Auth::id())->getSubTotal() ?? 0 : 0 }}";
-            var amount = "{{ $subTotal }}";
+            var amount = "{{ $fastShippingCheck ? $fastShippingSubtotal : $subTotal }}";
             paypal.Buttons({
                 style: {
                     color: 'blue',
@@ -455,7 +457,8 @@
                         var amount = details.purchase_units[0].amount.value;
                         var currency = details.purchase_units[0].amount.currency_code;
                         var shipping_address = details.purchase_units[0].shipping.address.admin_area_1;
-                        var guestUserEmail = $("#guestUserEmail").val()
+                        var guestUserEmail = $("#guestUserEmail").val();
+                        var fastShippingCharges = "{{ $fastShippingCheck ? $fastShippingCharges : 0 }}";
 
                         var allData = {
                             trans_id: trans_id,
@@ -468,9 +471,9 @@
                             shipping_address: shipping_address,
                             discount: discountAmount,
                             vat_amount: vatAmount,
-                            guest_user_email: guestUserEmail
+                            guest_user_email: guestUserEmail,
+                            fast_shipping_charges: fastShippingCharges
                         };
-
 
                         // alert('Transaction completed by ' + details.payer.name.given_name);
                         // Call your server to save the transaction

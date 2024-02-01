@@ -7,6 +7,7 @@ use App\Models\CouriersAssignment;
 use App\Models\CouriersAssignmentDetail;
 use App\Models\Email;
 use App\Models\Newsletter_subscriber;
+use App\Models\Shipping;
 use App\Models\ShoppingCart;
 use App\Models\TaxRate;
 use App\Models\Transaction;
@@ -133,7 +134,7 @@ class CartController extends Controller
 
             if (Auth::user() &&  Auth::user()->type == 'dropshipper') {
 
-                if (@$courier_assign && $courier_assign->status == 2) {
+                /*if (@$courier_assign && $courier_assign->status == 2) {
                     $courierAssignmentDetail = CouriersAssignmentDetail::where('product_id', '=', $item->id)->where('cart_id', $cart->id)->first();
                     $item->courier_detail = $courierAssignmentDetail;
 
@@ -145,7 +146,7 @@ class CartController extends Controller
 
                     $item->courier_id = @$productDetails->courier->id;
                     $subTotal = $subTotal+$total_shipment_charges;
-                }
+                }*/
             } elseif (Auth::user() &&  Auth::user()->type == 'wholesaler') {
 
                 $this->applyDiscount($cartContents);
@@ -159,21 +160,21 @@ class CartController extends Controller
 
         if(Auth::user() &&  Auth::user()->type == 'dropshipper' && @$courier_assign->status == 2 ) {
 
-            $cartContents = $cartContents->sortBy('courier_id');
+            /*$cartContents = $cartContents->sortBy('courier_id');
             $this->attach_color($cartContents);
             $this->attach_shipment_charges($cartContents);
             $total_shipment_charges=$cartContents->shipment_charges;
-            $subTotal = $subTotal+$total_shipment_charges;
+            $subTotal = $subTotal+$total_shipment_charges;*/
 
 
         }
 
         if(Auth::user() &&  Auth::user()->type == 'wholesaler' && Auth::user()->type == 'dropshipper'  ) {
 
-            $cartContents = $courier_assign->sortBy('courier_id');
+            /*$cartContents = $courier_assign->sortBy('courier_id');
             $this->attach_color($cartContents);
             $this->attach_shipment_charges($cartContents);
-            $total_shipment_charges=$cartContents->shipment_charges;
+            $total_shipment_charges=$cartContents->shipment_charges;*/
 
         }
 
@@ -194,7 +195,14 @@ class CartController extends Controller
         //     dd($total_shipment_charges);
         // }
 
-        return view('cart.cartDetails', compact('vatCharges','couriers','total_shipment_charges','cart','count', 'cartContents', 'subTotal', 'cartSum', 'originalPrice'));
+        $fastShippingCharges = 0;
+        $fastShipping = Shipping::whereName('TCS')->first();
+        if($fastShipping)
+        {
+            $fastShippingCharges = $fastShipping->charges;
+        }
+
+        return view('cart.cartDetails', compact('vatCharges', 'fastShippingCharges','couriers','total_shipment_charges','cart','count', 'cartContents', 'subTotal', 'cartSum', 'originalPrice'));
     }
 
     public function cartDetails1($id)
@@ -513,12 +521,13 @@ class CartController extends Controller
             ]);
         }
 
-        if(settingValue('wholesaler_quantity')!=""){
+        /*comment minimum quantity check*/
+        /*if(settingValue('wholesaler_quantity')!=""){
             if(((Auth::id())?Cart::session(Auth::id())->getTotalQuantity():Cart::getTotalQuantity() < settingValue('wholesaler_quantity')) && (Auth::user() && Auth::user()->type == 'wholesaler')) {
                 Session::flash('error', 'Sorry! You must add atleast '.settingValue('wholesaler_quantity').' items in cart.');
                 return redirect()->back();
             }
-        }
+        }*/
         if(Auth::check())
         {
             $cart=ShoppingCart::where(['user_id' => Auth::id(), 'payment_status' => 'pending'])->first();
@@ -540,7 +549,7 @@ class CartController extends Controller
             if(Auth::user() && Auth::user()->type == 'dropshipper')
             {
 
-                if(@$courier_assign && $courier_assign->status == 2 )
+                /*if(@$courier_assign && $courier_assign->status == 2 )
                 {
                     $courierAssignmentDetail= CouriersAssignmentDetail::where('product_id','=',$item->id)->where('cart_id',$cart->id)->first();
                     $item->courier_detail=$courierAssignmentDetail;
@@ -555,7 +564,7 @@ class CartController extends Controller
                      $subTotal = $subTotal+$total_shipment_charges;
 
 
-                }
+                }*/
             }
             elseif(Auth::user() && Auth::user()->type == 'wholesaler')
             {
@@ -572,18 +581,18 @@ class CartController extends Controller
 
         if((Auth::user() && Auth::user()->type == 'dropshipper') && @$courier_assign->status == 2 ) {
 
-            $cartContents = $cartContents->sortBy('courier_id');
+            /*$cartContents = $cartContents->sortBy('courier_id');
             $this->attach_color($cartContents);
             $this->attach_shipment_charges($cartContents);
             $total_shipment_charges=$cartContents->shipment_charges;
-            $subTotal = $subTotal+ $total_shipment_charges;
+            $subTotal = $subTotal+ $total_shipment_charges;*/
 
         }
 
         if((Auth::user() && Auth::user()->type == 'dropshipper') && (($count == 1 && $item->quantity  > 1 ) && @$courier_assign->status !=2  ) ) {
 
-            Session::flash('error', 'Kindly Send Request To Admin');
-            return redirect()->back();
+            /*Session::flash('error', 'Kindly Send Request To Admin');
+            return redirect()->back();*/
 
         }
 
@@ -593,7 +602,15 @@ class CartController extends Controller
 
         //$subTotal = number_format($subTotal,2);
 
-        return view('cart.makePayment', compact('vatCharges','total_shipment_charges','userData', 'cartContents', 'subTotal', 'cartSum', 'originalPrice'));
+        $fastShippingCharges = 0;
+        $fastShipping = Shipping::whereName('TCS')->first();
+        if($fastShipping)
+        {
+            $fastShippingCharges = $fastShipping->charges;
+        }
+
+        $fastShippingCheck = request()->get('fastShipping') == 'true' ? true : false;
+        return view('cart.makePayment', compact('vatCharges', 'fastShippingCheck', 'fastShippingCharges','total_shipment_charges','userData', 'cartContents', 'subTotal', 'cartSum', 'originalPrice'));
     }
 
 
@@ -940,6 +957,7 @@ class CartController extends Controller
                     'amount'=>$request->amount,
                     'currency'=> $request->currency,
                     'shipping_address'=>$request->shipping_address,
+                    'fast_shipping_charges'=>$request->fast_shipping_charges,
                 ]);
             // update transaction
             $transaction = Transaction::create($transaction);

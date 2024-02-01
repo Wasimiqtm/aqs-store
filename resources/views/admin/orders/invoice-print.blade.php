@@ -161,7 +161,7 @@
                                         }
 
                                         // changes for retailer 02-05-23
-                                        if ($userType == 'retailer' || $userType = 'guest') {
+                                        if ($userType == 'retailer' || $userType == 'guest') {
                                             $item_sub_total = $item_sub_total - $productVat;
                                             $item_grand_total = $item_grand_total - $productVat;
                                             $subtotal = $subtotal - $order['tax'];
@@ -229,12 +229,18 @@
 
                                         <li>VAT : {{ $currency_code }}{{ number_format($order['tax'], 2) }} </li>
                                         @if ($userType != 'retailer' && $userType != 'guest')
-                                            <li>Courier Charges :
+                                            {{--<li>Courier Charges :
                                                 {{ $currency_code }}{{ number_format($courierAmout, 2) }}
                                             </li>
 
                                             <li>Courier Vat :
                                                 {{ $currency_code }}{{ number_format($courierAmout * ($vatCharges / 100), 2) }}
+                                            </li>--}}
+                                            <li>@if($order_with_transaction['fast_shipping_charges'] > 0)
+                                                    Fast Shipping Charges : {{ $currency_code }}{{$order_with_transaction['fast_shipping_charges']}}
+                                                @else
+                                                    Free Shipping : {{ $currency_code }}0
+                                                @endif
                                             </li>
                                         @endif
                                         <li class="grand-total">Total :

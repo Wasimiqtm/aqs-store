@@ -269,6 +269,7 @@ class OrdersController extends Controller
 
         $couriers = Courier::pluck('name', 'id')->prepend('Select Courier', '');
         $order = Transaction::with(['cart', 'purchasedItems.product.product_images'])->find($id);
+        $order_with_transaction = unserialize($order->trans_details);
         // dd($order->toArray());
         $courier_assign = courierDetailData($order->cart_id);
         $cartContents = unserialize($order->cart->cart_details);
@@ -292,7 +293,7 @@ class OrdersController extends Controller
 //            dd($order->toArray());
 //        }
 
-        return view($this->resource . '/invoice', compact('order', 'couriers','vatCharges', 'totalShipmentCharges', 'cartContents'));
+        return view($this->resource . '/invoice', compact('order', 'order_with_transaction', 'couriers','vatCharges', 'totalShipmentCharges', 'cartContents'));
     }
 
     public function getOrderDetails($id)
@@ -454,6 +455,7 @@ class OrdersController extends Controller
 
         $couriers = Courier::pluck('name', 'id')->prepend('Select Courier', '');
         $order = Transaction::with(['cart', 'purchasedItems.product.product_images'])->find($id);
+        $order_with_transaction = unserialize($order->trans_details);
 
         $courier_assign = courierDetailData($order->cart_id);
         $cartContents = unserialize($order->cart->cart_details);
@@ -467,7 +469,7 @@ class OrdersController extends Controller
 
         $vatCharges=TaxRate::select('rate')->where('id',1)->first();
         $vatCharges=(int)$vatCharges->rate;
-        return view($this->resource . '/invoice-print', compact('order', 'couriers','vatCharges', 'totalShipmentCharges'));
+        return view($this->resource . '/invoice-print', compact('order', 'order_with_transaction', 'couriers','vatCharges', 'totalShipmentCharges'));
     }
 
     public function updateOrderStatus($id) {
