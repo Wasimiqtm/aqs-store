@@ -985,8 +985,8 @@ class CartController extends Controller
             } else {
                 $notificationEmail = $request->guest_user_email;
             }
-            $this->sendPaymentSuccessEmail($notificationEmail,'user');
-            $this->sendPaymentSuccessEmail('','admin');
+            /*$this->sendPaymentSuccessEmail($notificationEmail,'user');
+            $this->sendPaymentSuccessEmail('','admin');*/
             ShoppingCart::whereId($data->id)->update(array('payment_status' => 'complete'));
             (Auth::id())?Cart::session(Auth::id())->clear():Cart::clear();
             Session::flash('success', 'Your order has been placed successfully');
