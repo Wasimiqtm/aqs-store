@@ -122,10 +122,11 @@
                     @if(Auth::user() && (Auth::user()->type == 'dropshipper'))
                     <tr>
                         <td>Product Vat</td>
-                        <td class="subtotal">£{{number_format(($originalPrice*$vatCharges)/100,2)}}</td>
+                        <td class="subtotal dropeshipper_check_for_vat">£{{number_format((($originalPrice)*$vatCharges)/100,2)}}</td>
                         @php
+                        $updatedVat = number_format((($subTotal+$fastShippingCharges)*$vatCharges)/100,2);
+                        $fastShippingSubtotal=number_format($subTotal+$fastShippingCharges+$updatedVat,2);
                         $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2);
-                        $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
                         @endphp
                     </tr>
                     @endif
@@ -194,9 +195,11 @@
                     </tr>
                     <tr>
                         <td>Vat</td>
-                        <td>£{{number_format(($subTotal*$vatCharges)/100,2)}}</td>
-                        @php $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2);
-                            $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
+                        <td class="dropeshipper_check_for_vat">£{{number_format(($subTotal*$vatCharges)/100,2)}}</td>
+                        @php
+                            $updatedVat = number_format((($subTotal+$fastShippingCharges)*$vatCharges)/100,2);
+                            $fastShippingSubtotal=number_format($subTotal+$fastShippingCharges+$updatedVat,2);
+                            $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2);
                         @endphp
                     </tr>
                     @endif
@@ -333,13 +336,22 @@
 
     function handleCheckboxChange(checkbox) {
         // Get the value of the variable when the checkbox is checked
-        var updatedCharges = checkbox.checked ? "{{@$fastShippingSubtotal}}" : "{{$subTotal}}";
+        var updatedCharges = 0;
+        var updatedVat = 0;
+
+        if(checkbox.checked) {
+            updatedCharges = "{{@$fastShippingSubtotal}}"
+            updatedVat = "{{$updatedVat}}"
+        } else {
+            updatedCharges = "{{$subTotal}}"
+            updatedVat = "{{number_format((($originalPrice)*$vatCharges)/100,2)}}"
+        }
+
+        $('.dropeshipper_check_for_vat').text(updatedVat)
+        $('.price-total-with-shipping').text(updatedCharges)
 
         var newHref = checkbox.checked ? "{{url('make-payment?fastShipping=true')}}" : "{{url('make-payment?fastShipping=false')}}"
-
         $("#checkoutLink").attr("href", newHref);
-
-        $('.price-total-with-shipping').text(updatedCharges)
     }
 
     function checkToUpdateCart(event){

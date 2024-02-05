@@ -178,11 +178,16 @@
                                 @if (Auth::user() && Auth::user()->type == 'dropshipper')
                                     <tr>
                                         <td>Subtotal Vat</td>
-                                        @php $vatAmount = number_format(($originalPrice*$vatCharges)/100,2);@endphp
-                                        <td class="subtotal">£{{ number_format(($originalPrice * $vatCharges) / 100, 2) }}
+                                        @php
+                                            $vatAmount = number_format(($subTotal*$vatCharges)/100,2);
+                                            $updatedVat = number_format((($subTotal+$fastShippingCharges)*$vatCharges)/100,2);
+                                        @endphp
+                                        <td class="subtotal">£{{ $fastShippingCheck ? $updatedVat : $vatAmount }}
+
                                         </td>
-                                        @php $subTotal=number_format($subTotal+(($subTotal)*$vatCharges)/100,2);
-                                         $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
+                                        @php
+                                            $fastShippingSubtotal=number_format($subTotal+$fastShippingCharges+$updatedVat,2);
+                                            $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2);
                                         @endphp
                                     </tr>
                                 @endif
@@ -233,11 +238,14 @@
 
                                         <td>Vat</td>
 
-                                        @php $vatAmount = number_format(($subTotal*$vatCharges)/100,2);@endphp
-                                        <td>£{{ number_format(($subTotal * $vatCharges) / 100, 2) }}</td>
-
-                                        @php $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2);
-                                         $fastShippingSubtotal=number_format($subTotal+($fastShippingCharges),2);
+                                        @php
+                                            $vatAmount = number_format(($subTotal*$vatCharges)/100,2);
+                                            $updatedVat = number_format((($subTotal+$fastShippingCharges)*$vatCharges)/100,2);
+                                        @endphp
+                                        <td>£{{ $fastShippingCheck ? $updatedVat : $vatAmount }}</td>
+                                        @php
+                                            $fastShippingSubtotal=number_format($subTotal + $updatedVat+($fastShippingCharges),2);
+                                            $subTotal=number_format($subTotal+($subTotal*$vatCharges)/100,2);
                                         @endphp
                                     </tr>
                                 @endif
@@ -354,6 +362,7 @@
     <script type="text/javascript">
         var discountAmount = "{{ isset($discountAmount) ? @$discountAmount : 0 }}";
         var vatAmount = "{{ isset($vatAmount) ? @$vatAmount : 0 }}";
+        var vatAmount = "{{ $fastShippingCheck ? (isset($updatedVat) ? @$updatedVat : 0) : (isset($vatAmount) ? @$vatAmount : 0) }}";
         $(document).ready(function() {
             // disable payment
             $("#paypal-button-container").addClass("disableSection");
