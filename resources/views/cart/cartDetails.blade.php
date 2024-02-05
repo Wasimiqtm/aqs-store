@@ -341,7 +341,7 @@
 
         if(checkbox.checked) {
             updatedCharges = "{{@$fastShippingSubtotal}}"
-            updatedVat = "{{$updatedVat}}"
+            updatedVat = "{{@$updatedVat}}"
         } else {
             updatedCharges = "{{$subTotal}}"
             updatedVat = "{{number_format((($originalPrice)*$vatCharges)/100,2)}}"
