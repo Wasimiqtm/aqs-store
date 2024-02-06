@@ -124,10 +124,13 @@
                                         <th class="text-center">Quantity</th>
                                         <th class="text-center">Product Amount</th>
                                         <th class="text-center">Product VAT</th>
-                                        <th class="text-center">Courier Name</th>
-                                        @if ($userType != 'retailer')
+                                        @if ($userType == 'retailer' || $userType == 'guest')
+                                            <th class="text-center">Courier Name</th>
                                             <th class="text-center">Courier Charges</th>
                                             <th class="text-center">Courier VAT</th>
+                                        @endif
+                                        @if ($userType != 'retailer' && $userType != 'guest')
+                                            <th class="text-center">Fast Shipping</th>
                                         @endif
                                         <th class="text-center">Grand Total</th>
                                     </tr>
@@ -190,17 +193,33 @@
                                             <td class="text-center">
                                                 {{ $currency_code }}{{ number_format($item_sub_total, 2) }}</td>
                                             <td class="text-center">
-                                                {{ $currency_code }}{{ number_format($productVat, 2) }}
+                                                {{ $currency_code }}{{ number_format($order['tax'], 2) }}
                                             </td>
-                                            <td class="text-center">{{ $courierName }}</td>
-                                            @if ($userType != 'retailer')
+
+                                            @if ($userType == 'retailer' || $userType == 'guest')
+                                                <td class="text-center">{{ $courierName }}</td>
                                                 <td class="text-center">{{ $currency_code }}{{ $courier }}</td>
                                                 <td class="text-center">
                                                     {{ $currency_code }}{{ number_format($courierVat, 2) }}
                                                 </td>
                                             @endif
-                                            <td class="text-center">
-                                                {{ $currency_code }}{{ number_format($item_grand_total, 2) }}</td>
+                                            @if ($userType != 'retailer' && $userType != 'guest')
+                                                {{--<td class="text-center">{{ $currency_code }}{{ $courier }}</td>
+                                                <td class="text-center">
+                                                    {{ $currency_code }}{{ number_format($courierVat, 2) }}
+                                                </td>--}}
+                                                <td class="text-center">
+                                                    {{ $currency_code }}
+                                                    @if($order_with_transaction['fast_shipping_charges'] > 0)
+                                                        {{$order_with_transaction['fast_shipping_charges']}}
+                                                    @else
+                                                        0
+                                                    @endif
+                                                </td>
+                                            @endif
+                                            {{--<td class="text-center">
+                                                {{ $currency_code }}{{ number_format($item_grand_total, 2) }}</td>--}}
+                                            <td class="text-center">{{ $currency_code }}{{ number_format($order['amount'], 2) }}</td>
                                         </tr>
                                     @endforeach
 
