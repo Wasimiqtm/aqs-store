@@ -156,7 +156,13 @@
                                         $item_discount = @$single_item['item_discount'] ? $single_item['item_discount'] : 0;
                                         $item_sub_total = $item_sub_total - $item_discount;
                                         $courierVat = $courier * ($vatCharges / 100);
-                                        $item_grand_total = $item_sub_total + $productVat + $courier + $courierVat;
+
+                                        if($userType == 'retailer' || $userType == 'guest')
+                                        {
+                                            $item_grand_total = $item_sub_total + $productVat + $courier + $courierVat;
+                                        } else {
+                                            $item_grand_total = $item_sub_total;
+                                        }
 
                                         // add courier assignment
                                         if ($totalShipmentCharges > 0) {
@@ -184,7 +190,12 @@
                                             <td class="text-center">
                                                 {{ $currency_code }}{{ number_format($item_sub_total, 2) }}</td>
                                             <td class="text-center">
-                                                {{ $currency_code }}{{ number_format($order['tax'], 2) }}
+                                                {{ $currency_code }}
+                                                @if($userType == 'retailer' || $userType == 'guest')
+                                                    {{ number_format($productVat, 2) }}
+                                                @else
+                                                    {{ number_format($order['tax'], 2) }}
+                                                @endif
                                             </td>
                                             @if ($userType == 'retailer' || $userType == 'guest')
                                                 <td class="text-center">{{ $courierName }}</td>
@@ -207,9 +218,14 @@
                                                     @endif
                                                 </td>
                                             @endif
-                                            {{--<td class="text-center">
-                                                {{ $currency_code }}{{ number_format($item_grand_total, 2) }}</td>--}}
-                                            <td class="text-center">{{ $currency_code }}{{ number_format($order['amount'], 2) }}</td>
+                                            <td class="text-center">
+                                                {{ $currency_code }}
+                                                @if(count($cart_details) > 1)
+                                                    {{ number_format($item_grand_total, 2) }}
+                                                @else
+                                                    {{ number_format($order['amount'], 2) }}
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
 
@@ -261,8 +277,7 @@
                                                 @endif
                                             </li>
                                         @endif
-                                        <li class="grand-total">Total :
-                                            {{ $currency_code }}{{ number_format($order['amount'], 2) }}</li>
+                                        <li class="grand-total">Total :{{ $currency_code }}{{ number_format($order['amount'], 2) }}</li>
                                     </ul>
                                 </div>
                             </div>
