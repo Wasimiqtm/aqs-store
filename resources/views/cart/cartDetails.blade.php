@@ -139,6 +139,7 @@
                         @php
                             $pVat = (($subTotal)*$vatCharges)/100;
                             $subTotal=number_format($subTotal,2);
+                            $fastShippingSubtotal=number_format($subTotal+$fastShippingCharges,2);
                         @endphp
                     @endif
 
@@ -160,10 +161,10 @@
                         @endif
                     </tr>
                     <tr>
-                        @if(Auth::user() && ((Auth::user()->type == 'dropshipper') || (Auth::user()->type == 'wholesaler')))
+                        {{--@if(Auth::user() && ((Auth::user()->type == 'dropshipper') || (Auth::user()->type == 'wholesaler')))--}}
                             <td><label><input style="opacity: 1" type="checkbox" name="fast_shipping" onchange="handleCheckboxChange(this)">Fast Shipping</label></td>
                             <td id="fastShippingCharges">£{{$fastShippingCharges}}</td>
-                        @endif
+                        {{--@endif--}}
                     </tr>
 
                     {{--@if(Auth::user() && Auth::user()->type == 'dropshipper')
