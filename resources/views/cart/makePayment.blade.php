@@ -199,10 +199,10 @@
                                         <td>{{$fastShippingCheck ? 'Fast Shipping' : 'Free Shipping'}}</td>
                                             <td>£{{ $fastShippingCheck ? $fastShippingCharges : 0 }}</td>
                                     @endif
-                                    @if(Auth::user() && Auth::user()->type == 'retailer')
+                                    {{--@if(Auth::user() && Auth::user()->type == 'retailer')
                                         <td>Shipping </td>
                                         <td class="subtotal">£{{ number_format($subTotal - $cartSum, 2) }}</td>
-                                    @endif
+                                    @endif--}}
                                 </tr>
 
                                 @if (Auth::user() && Auth::user()->type == 'dropshipper')
