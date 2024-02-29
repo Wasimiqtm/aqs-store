@@ -1151,6 +1151,7 @@ class CartController extends Controller
                     'amount'=> $request->amount,
                     'currency'=>'£',
                     'shipping_address'=> '',
+                    'fast_shipping_charges'=>$request->fast_shipping_charges,
                 ]);
             // update transaction
             $transaction = Transaction::create($transaction);

@@ -522,13 +522,15 @@
 
         function payWithWallet(subtotal, available) {
             if (available > subtotal) {
+                var fastShippingCharges = "{{ $fastShippingCheck ? $fastShippingCharges : 0 }}";
                 $.ajax({
                     url: '{{ url('/paywith-wallet') }}',
                     method: "post",
                     data: {
                         amount: subtotal,
                         discount: discountAmount,
-                        vat_amount: vatAmount
+                        vat_amount: vatAmount,
+                        fast_shipping_charges: fastShippingCharges
                     },
                     success: function(response) {
                         if (response.status) {
