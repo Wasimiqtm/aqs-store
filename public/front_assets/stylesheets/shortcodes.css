@@ -120,13 +120,13 @@
 }
 
 .banner-box.style2 .inner-box {
-    width: 52%;
+    width: 50%;
     padding-left: 14px;
     padding-right: 14px;
 }
 
 .banner-box.style2 .inner-box:nth-child(2) {
-    width: 48%;
+    width: 50%;
 }
 
 
@@ -198,7 +198,7 @@
     bottom: -1px;
     left: 50%;
     margin-left: -3.5px;
-    border-bottom: 7px solid #e5e5e5;
+    border-bottom: 7px solid #eeb716;
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
     opacity: 0;
@@ -206,9 +206,11 @@
 }
 
 .product-tab ul.tab-list li.active {
-    color: #2d2d2d;
-    font-weight: 500;
+      color: #eeb716;
+    font-weight: 700;
     font-size: 20px;
+   
+    border-radius: 4px;
 }
 
 .product-tab ul.tab-list li:hover:before,
@@ -291,10 +293,12 @@
 /* Product Box */
 
 .product-box {
-    /*height: 370px;*/
-    height: 450px;
+    height: 400px;
     margin-bottom: 30px;
     overflow: hidden;
+    box-shadow: 0px 0px 10px 0px #eeb71699;
+    border-radius: 8px;
+    min-height: 370px;
 }
 
 .product-box.style1 {
@@ -448,13 +452,13 @@
     font-size: 12px;
     font-weight: 600;
     text-align: center;
-    background-color: #904343;
+    background-color: #243a64;
     border-radius: 50%;
     z-index: 99;
 }
 
 .imagebox span.item-sale {
-    background-color: #f92400;
+    background-color: #eeb716;
     left: 10px;
     right: auto;
 }
@@ -510,7 +514,7 @@
 
 .imagebox .box-bottom .btn-add-cart a {
     display: inline-block;
-    background-color: #f92400;
+    background-color: #eeb716;
     color: #fff;
     font-size: 14px;
     height: 45px;
@@ -531,7 +535,7 @@
     top: 0;
     left: 0;
     z-index: -1;
-    background: #904343;
+    background: #243a64;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);
     -webkit-transform-origin: 0 50%;
@@ -580,12 +584,13 @@
 }
 
 .product-box:hover .imagebox {
-    border: 2px solid #e5e5e5;
+      box-shadow: 0px 0px 10px 0px #243a64;
     border-radius: 8px;
     z-index: 999;
     background-color: #fff;
-    /* box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.2);	-webkit-transition:all 0.3s ease-in-out;	-moz-transition:all 0.3s ease-in-out;	-ms-transition:all 0.3s ease-in-out;	-o-transition:all 0.3s ease-in-out;	transition:all 0.3s ease-in-out;	*/
-}
+   /* box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.2);	-webkit-transition:all 0.3s ease-in-out;	-moz-transition:all 0.3s ease-in-out;	-ms-transition:all 0.3s ease-in-out;	-o-transition:all 0.3s ease-in-out;	transition:all 0.3s ease-in-out;	
+    
+*/}
 
 .product-box.style2:hover .imagebox {
     border: 2px solid #e5e5e5;
@@ -4375,14 +4380,18 @@ input[type="checkbox"]:checked + label:before {
 
 .product-detail .header-detail h4.name {
     color: #484848;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 24px;
+    font-weight: 700 !important;
     font-family: 'Open Sans';
-    margin-bottom: 3px;
+   text-transform: capitalize;
+    margin-bottom: 10px;
 }
 
 .product-detail .header-detail .category {
-    color: #919191;
+   font-size: 14px;
+    padding: 2px;
+    color: #000;
+
 }
 
 .product-detail .header-detail .reviewed {
@@ -4401,15 +4410,21 @@ input[type="checkbox"]:checked + label:before {
 }
 
 .product-detail .content-detail .price .sale {
-    font-size: 35px;
+    font-size: 45px;
+    font-weight:800;
     margin-top: 5px;
 }
+.product-detail .content-detail .price .regular {
+    font-size: 20px;
+}
+
 
 .product-detail .content-detail .info-text {
     color: #838383;
     line-height: 20px;
-    margin-top: 31px;
-    margin-bottom: 9px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+        font-size: 14px;
 }
 
 .product-id {
@@ -4438,8 +4453,6 @@ input[type="checkbox"]:checked + label:before {
 .product-detail .footer-detail .quanlity-box > div.colors {
     margin-right: 8px;
     position: relative;
-    font-size: 16px;
-    width: 355px;
 }
 
 .product-detail .footer-detail .quanlity-box > div.colors:before {
@@ -4568,9 +4581,12 @@ input[type="checkbox"]:checked + label:before {
 }
 
 .reviewed .status-product {
-    float: right;
-    padding-top: 12px;
+        padding-top: 0;
     color: #484848;
+    position: absolute;
+    right: 40px;
+    top: 20px;
+    font-size: 14px;
 }
 
 .reviewed .status-product span {
@@ -4604,7 +4620,7 @@ input[type="checkbox"]:checked + label:before {
     line-height: 55px;
     text-align: center;
     color: #fff;
-    background-color: #f92400;
+    background-color: #243a64;
     border-radius: 30px;
     width: 220px;
     font-size: 16px;
@@ -4612,7 +4628,7 @@ input[type="checkbox"]:checked + label:before {
 }
 
 .box-cart.style2 .btn-add-cart a:hover {
-    background-color: #2d2d2d;
+    background-color: #eeb716;
 }
 
 .box-cart.style2 .btn-add-cart a img {
@@ -4663,7 +4679,7 @@ input[type="checkbox"]:checked + label:before {
 .product-detail-bar li:before {
     content: '';
     position: absolute;
-    background-color: #f5f5f5;
+    background-color:#eeb716;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     top: 0px;
@@ -4676,7 +4692,7 @@ input[type="checkbox"]:checked + label:before {
 
 .product-detail-bar li.active,
 .product-detail-bar li:hover {
-    color: #2d2d2d;
+    color: #fff;
     font-weight: 500;
 }
 
@@ -5061,7 +5077,8 @@ input[type="checkbox"]:checked + label:before {
     background-color: #fff;
     border: none;
     height: 40px;
-    box-shadow: 0px 2px 3px 0px rgba(234, 234, 234, 1);
+    border: 1px solid #eeb716;
+    box-shadow: 0px 0px 10px 0px #eeb71699;
 }
 
 .form-review form > div > textarea {
@@ -5070,7 +5087,8 @@ input[type="checkbox"]:checked + label:before {
     border-radius: 10px;
     border: none;
     padding-left: 30px;
-    box-shadow: 0px 2px 3px 0px rgba(234, 234, 234, 1);
+    border: 1px solid #eeb716;
+    box-shadow: 0px 0px 10px 0px #eeb71699;
 }
 
 .form-review form .btn-submit button {
@@ -5081,10 +5099,13 @@ input[type="checkbox"]:checked + label:before {
     font-size: 16px;
     color: #fff;
     text-align: center;
-    background-color: #f92400;
+    background-color:#eeb716;
     border-radius: 30px;
     font-family: 'Open Sans';
     font-weight: 400;
+}
+.form-review form .btn-submit button:hover {
+     background-color:#243a64 ;
 }
 
 .form-review.style1 form > div > input {
@@ -5328,6 +5349,7 @@ input[type="checkbox"]:checked + label:before {
 
 .flexslider .flex-viewport ul.slides li img {
     max-width: 420px;
+    max-height:420px;
 }
 
 
@@ -5822,7 +5844,7 @@ input[type="checkbox"]:checked + label:before {
 }
 
 .cart-totals form .btn-cart-totals a.update {
-    background-color: #adadad;
+    background-color: #243a64;
     margin-bottom: 28px;
     position: relative;
     overflow: hidden;
@@ -5847,7 +5869,7 @@ input[type="checkbox"]:checked + label:before {
 }
 
 .cart-totals form .btn-cart-totals a.proceed-admin:before {
-    background-color: #858018 !important;
+    background-color: #eeb716 !important;
     margin-top: 28px;
     position: relative;
     overflow: hidden;
@@ -5856,7 +5878,7 @@ input[type="checkbox"]:checked + label:before {
 
 
 .cart-totals form .btn-cart-totals a.checkout {
-    background-color: #f92400;
+    background-color: #eeb716;
     position: relative;
     overflow: hidden;
     z-index: 5;
@@ -6178,7 +6200,7 @@ table.product thead tr th:last-child {
 }
 
 .form-login .form-box button {
-    background-color: #f92400;
+    background-color: #eeb716;
     color: #fff;
     font-size: 16px;
     height: 50px;
@@ -6199,7 +6221,7 @@ table.product thead tr th:last-child {
     color: #fff;
     font-size: 16px;
     font-weight: 600;
-    background-color: #484848;
+    background-color: #243a64;
     height: 50px;
     line-height: 50px;
     border-radius: 25px;
@@ -6963,19 +6985,19 @@ table.product thead tr th:last-child {
 }
 
 #form-contact .form-box button {
-    height: 55px;
-    line-height: 55px;
-    background-color: #f92400;
+    height: 40px;
+    line-height: 40px;
+    background-color: #eeb716;
     color: #fff;
     font-family: 'Open Sans';
     font-weight: 600;
     font-size: 15px;
-    padding: 0 92px;
+    padding: 0 35px;
     margin: 10px 4px 0px;
 }
 
 #form-contact .form-box button:hover {
-    background-color: #2d2d2d;
+    background-color: #243a64;
 }
 
 .box-contact {
