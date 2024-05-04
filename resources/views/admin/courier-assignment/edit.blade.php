@@ -22,40 +22,43 @@
 
             <div class="container">
 {{--                <form action="{{url('admin/courier-assignment/'.$courierAssignment->id.'/store')}}" id="myform" method="POST" enctype="multipart/form-data">--}}
+                @if($count > 0)
+                    <form class="form-horizontal" role="form" id="form" method="POST" action="{{url('admin/courier-assignment/'.Hashids::encode($courierAssignment->id).'/store')}}">
+                        {{ csrf_field() }}
+                        @include('admin.courier-assignment.cartDetails')
 
-                <form class="form-horizontal" role="form" id="form" method="POST" action="{{url('admin/courier-assignment/'.Hashids::encode($courierAssignment->id).'/store')}}">
-                    {{ csrf_field() }}
-                                    @include('admin.courier-assignment.cartDetails')
+                        <div class="col-md-12" style="margin-top: 50px;  ">
 
-                    <div class="col-md-12" style="margin-top: 50px;  ">
-
-                        <div class="col-md-3 pull-right">
+                            <div class="col-md-3 pull-right">
 
 
-                            <button type="submit" id="save_id"  class=" btn-success" title="">Save</button>
-                            <a href="{{url('admin/cancel-request/'.$courierAssignment->id.'/admin')}}" class="btn btn-warning" title="">Cancel Order</a>
+                                <button type="submit" id="save_id"  class=" btn-success" title="">Save</button>
+                                <a href="{{url('admin/cancel-request/'.$courierAssignment->id.'/admin')}}" class="btn btn-warning" title="">Cancel Order</a>
+
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-success " data-toggle="modal"
+                                        data-target="#end" data-required_qty="" >
+                                    <span>Approve</span>
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+
+
+
+
+
+
+                            </div>
 
                         </div>
 
-
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-success " data-toggle="modal"
-                                    data-target="#end" data-required_qty="" >
-                                <span>Approve</span>
-                            </button>
-                        </div>
-                        <div class="col-md-3">
-
-
-
-
-
-
-                        </div>
-
-                    </div>
-
-                </form>
+                    </form>
+                @else
+                    No details found
+                @endif
 
 {{--
 
